@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Localisateur de lieux | Sossou Kouamé</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      color: white;
+    }
+
+    .main-title {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      animation: fadeInDown 1s ease-out;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 30px;
+      animation: fadeInUp 1s ease-out 0.3s both;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      padding: 40px;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      animation: slideIn 0.8s ease-out;
+    }
+
+    h2 {
+      color: #667eea;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 2px;
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: #fafafa;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 10px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(-1px);
+    }
+
+    .divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #667eea, transparent);
+      margin: 30px 0;
+      position: relative;
+    }
+
+    .divider::before {
+      content: '✦';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 0 15px;
+      color: #667eea;
+      font-size: 14px;
+    }
+
+    /* Barre de chargement */
+    .loader-container {
+      display: none;
+      margin-top: 20px;
+      background: #f0f0f0;
+      border-radius: 25px;
+      overflow: hidden;
+      height: 30px;
+      position: relative;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+      background-size: 200% 100%;
+      border-radius: 25px;
+      transition: width 0.1s ease;
+      animation: shimmer 1.5s infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      border-radius: 15px;
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+      border-left: 5px solid #667eea;
+    }
+
+    .result h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+    }
+
+    .result p {
+      margin: 8px 0;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .icon {
+      margin-right: 8px;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .success-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #11998e, #38ef7d);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: none;
+      animation: slideInRight 0.5s ease-out;
+      z-index: 1000;
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px;
+        margin: 10px;
+      }
+      .main-title {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1 class="main-title">🌍 Localisateur Intelligent</h1>
+  <p class="subtitle">Trouvez les meilleurs lieux au Bénin</p>
+
+  <div class="container">
+
+    <!-- Section Inscription -->
+    <div class="form-section">
+      <h2>👤 Inscription</h2>
+      
+      <div class="input-group">
+        <input id="nom" placeholder="Nom" autocomplete="family-name">
+      </div>
+      
+      <div class="input-group">
+        <input id="prenom" placeholder="Prénom" autocomplete="given-name">
+      </div>
+      
+      <div class="input-group">
+        <input id="email" type="email" placeholder="Email" autocomplete="email">
+      </div>
+      
+      <div class="input-group">
+        <input id="password" type="password" placeholder="Mot de passe" autocomplete="new-password">
+      </div>
+
+      <button onclick="register()">Créer mon compte</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Section Recherche -->
+    <div class="form-section">
+      <h2>🔍 Recherche de lieux</h2>
+      
+      <div class="input-group">
+        <select id="type">
+          <option value="">-- Choisir un type --</option>
+          <option>🍽️ Restaurant</option>
+          <option>🏖️ Plage</option>
+          <option>🍺 Buvette</option>
+          <option>🥩 Vente de viande</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <select id="ville">
+          <option value="">-- Choisir une ville --</option>
+          <option>Cotonou</option>
+          <option>Abomey-Calavi</option>
+          <option>Porto-Novo</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <select id="quartier">
+          <option value="">-- Choisir un quartier --</option>
+          <option>Fidjrossè</option>
+          <option>Akpakpa</option>
+          <option>Godomey</option>
+          <option>Ste Rita</option>
+        </select>
+      </div>
+
+      <button onclick="search()">🔎 Rechercher</button>
+
+      <!-- Barre de chargement -->
+      <div class="loader-container" id="loader">
+        <div class="progress-bar" id="progress">0%</div>
+      </div>
+
+      <!-- Résultat -->
+      <div class="result" id="result"></div>
+    </div>
+
+  </div>
+
+  <!-- Message de succès -->
+  <div class="success-message" id="successMsg"></div>
+
+  <script>
+    // Inscription
+    async function register() {
+      const nom = document.getElementById('nom').value;
+      const prenom = document.getElementById('prenom').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (!nom || !prenom || !email || !password) {
+        showMessage('Veuillez remplir tous les champs', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch('/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nom, prenom, email, password })
+        });
+        
+        const data = await response.json();
+        showMessage(data.message, 'success');
+        
+        // Vider les champs
+        document.getElementById('nom').value = '';
+        document.getElementById('prenom').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+        
+      } catch (error) {
+        showMessage('Erreur lors de l\'inscription', 'error');
+      }
+    }
+
+    // Animation barre de chargement
+    function animateLoader() {
+      const loader = document.getElementById('loader');
+      const progress = document.getElementById('progress');
+      
+      loader.style.display = 'block';
+      document.getElementById('result').style.display = 'none';
+      
+      let width = 0;
+      const interval = setInterval(() => {
+        width += 2;
+        progress.style.width = width + '%';
+        progress.textContent = width + '%';
+        
+        if (width >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            loader.style.display = 'none';
+            progress.style.width = '0%';
+          }, 300);
+        }
+      }, 30);
+      
+      return new Promise(resolve => setTimeout(resolve, 1500));
+    }
+
+    // Recherche
+    async function search() {
+      const type = document.getElementById('type').value;
+      const ville = document.getElementById('ville').value;
+      const quartier = document.getElementById('quartier').value;
+
+      if (!type || !ville || !quartier) {
+        showMessage('Veuillez sélectionner tous les critères', 'error');
+        return;
+      }
+
+      await animateLoader();
+
+      try {
+        const response = await fetch('/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type, ville, quartier })
+        });
+        
+        const data = await response.json();
+        
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `
+          <h3>${data.name}</h3>
+          <p><span class="icon">📍</span> <strong>Adresse :</strong> ${data.address}</p>
+          <p><span class="icon">📏</span> <strong>Distance :</strong> ${data.distance}</p>
+          <p><span class="icon">📝</span> <strong>Description :</strong> ${data.description}</p>
+        `;
+        resultDiv.style.display = 'block';
+        
+      } catch (error) {
+        showMessage('Erreur lors de la recherche', 'error');
+      }
+    }
+
+    // Afficher message
+    function showMessage(text, type) {
+      const msg = document.getElementById('successMsg');
+      msg.textContent = text;
+      msg.style.background = type === 'error' 
+        ? 'linear-gradient(135deg, #eb3349, #f45c43)' 
+        : 'linear-gradient(135deg, #11998e, #38ef7d)';
+      msg.style.display = 'block';
+      
+      setTimeout(() => {
+        msg.style.display = 'none';
+      }, 3000);
+    }
+  </script>
+
+</body>
+</html>
