@@ -12,77 +12,111 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+      --accent: #f093fb;
+      --success: #11998e;
+      --warning: #f093fb;
+      --glass: rgba(255, 255, 255, 0.95);
+    }
+
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       padding: 20px;
       color: white;
     }
 
-    .main-title {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
       animation: fadeInDown 1s ease-out;
     }
 
-    .subtitle {
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+      background: linear-gradient(to right, #fff, #f0f0f0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header p {
       font-size: 1.1rem;
       opacity: 0.9;
-      margin-bottom: 30px;
-      animation: fadeInUp 1s ease-out 0.3s both;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin-top: 10px;
+      backdrop-filter: blur(10px);
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.95);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--glass);
       color: #333;
-      padding: 40px;
-      width: 100%;
-      max-width: 500px;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      backdrop-filter: blur(10px);
-      animation: slideIn 0.8s ease-out;
+      padding: 35px;
+      border-radius: 25px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.3);
+      margin-bottom: 25px;
+      animation: slideUp 0.8s ease-out;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
     }
 
     h2 {
-      color: #667eea;
-      margin-bottom: 20px;
-      font-size: 1.5rem;
-      position: relative;
-      padding-bottom: 10px;
-    }
-
-    h2::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 3px;
-      background: linear-gradient(90deg, #667eea, #764ba2);
-      border-radius: 2px;
-    }
-
-    .form-section {
-      margin-bottom: 30px;
+      color: var(--primary);
+      margin-bottom: 25px;
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .input-group {
       position: relative;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      opacity: 0.5;
     }
 
     input, select {
       width: 100%;
-      padding: 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
+      padding: 15px 15px 15px 45px;
+      border: 2px solid #e8e8e8;
+      border-radius: 15px;
       font-size: 16px;
       transition: all 0.3s ease;
       background: #fafafa;
@@ -90,82 +124,104 @@
 
     input:focus, select:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: var(--primary);
       background: white;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     }
 
     button {
       width: 100%;
-      padding: 15px;
-      margin-top: 10px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 18px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
       color: white;
       border: none;
-      border-radius: 12px;
+      border-radius: 15px;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
     }
 
     button:hover {
       transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
     }
 
     button:active {
       transform: translateY(-1px);
     }
 
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .divider {
       height: 2px;
-      background: linear-gradient(90deg, transparent, #667eea, transparent);
-      margin: 30px 0;
+      background: linear-gradient(90deg, transparent, #ddd, transparent);
+      margin: 35px 0;
       position: relative;
     }
 
-    .divider::before {
-      content: '✦';
+    .divider::after {
+      content: '◆';
       position: absolute;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
       background: white;
-      padding: 0 15px;
-      color: #667eea;
-      font-size: 14px;
+      padding: 0 20px;
+      color: var(--primary);
+      font-size: 12px;
     }
 
-    /* Barre de chargement */
+    /* Loader */
     .loader-container {
       display: none;
-      margin-top: 20px;
+      margin-top: 25px;
       background: #f0f0f0;
-      border-radius: 25px;
+      border-radius: 30px;
       overflow: hidden;
-      height: 30px;
+      height: 35px;
       position: relative;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
     }
 
     .progress-bar {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+      background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
       background-size: 200% 100%;
-      border-radius: 25px;
-      transition: width 0.1s ease;
-      animation: shimmer 1.5s infinite;
+      border-radius: 30px;
+      transition: width 0.2s ease;
+      animation: shimmer 2s infinite, pulse 1.5s infinite;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       font-weight: bold;
-      font-size: 12px;
+      font-size: 14px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
     }
 
     @keyframes shimmer {
@@ -173,200 +229,391 @@
       100% { background-position: -200% 0; }
     }
 
-    .result {
-      margin-top: 20px;
-      padding: 20px;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      border-radius: 15px;
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    /* Résultats */
+    .results-container {
+      margin-top: 25px;
       display: none;
-      animation: fadeIn 0.5s ease-out;
-      border-left: 5px solid #667eea;
     }
 
-    .result h3 {
-      color: #667eea;
-      margin-bottom: 10px;
+    .api-status {
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .api-status.demo {
+      background: linear-gradient(135deg, var(--warning), #fee140);
+      color: #333;
+      animation: pulse 2s infinite;
+    }
+
+    .api-status.live {
+      background: linear-gradient(135deg, var(--success), #38ef7d);
+      color: white;
+    }
+
+    .result-card {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 20px;
+      border-left: 5px solid var(--primary);
+      animation: fadeInUp 0.5s ease-out;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-card:hover {
+      transform: translateX(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .result-title {
+      color: var(--primary);
       font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 5px;
     }
 
-    .result p {
-      margin: 8px 0;
+    .result-address {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .result-rating {
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .result-info {
+      display: grid;
+      gap: 12px;
       color: #555;
-      line-height: 1.6;
     }
 
-    .icon {
-      margin-right: 8px;
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+    }
+
+    .info-icon {
+      width: 35px;
+      height: 35px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #333;
+      min-width: 100px;
+    }
+
+    .thumbnail {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 2px solid #eee;
+    }
+
+    .stat-box {
+      background: rgba(102, 126, 234, 0.08);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-box:hover {
+      background: rgba(102, 126, 234, 0.15);
+      transform: translateY(-3px);
+    }
+
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 5px;
+      font-weight: 500;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 25px;
+      right: 25px;
+      padding: 20px 25px;
+      border-radius: 15px;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+      display: none;
+      animation: slideInRight 0.4s ease-out;
+      z-index: 1000;
+      max-width: 400px;
+      backdrop-filter: blur(10px);
+      line-height: 1.5;
+    }
+
+    .toast.success {
+      background: linear-gradient(135deg, var(--success), #38ef7d);
+    }
+
+    .toast.error {
+      background: linear-gradient(135deg, #eb3349, #f45c43);
+    }
+
+    .toast.info {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
     }
 
     /* Animations */
     @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(50px) scale(0.9);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(-30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .success-message {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: linear-gradient(135deg, #11998e, #38ef7d);
-      color: white;
-      padding: 15px 25px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      display: none;
-      animation: slideInRight 0.5s ease-out;
-      z-index: 1000;
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes slideInRight {
-      from {
-        opacity: 0;
-        transform: translateX(100px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
+      from { opacity: 0; transform: translateX(100px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
     @media (max-width: 600px) {
-      .container {
-        padding: 25px;
-        margin: 10px;
-      }
-      .main-title {
-        font-size: 1.8rem;
-      }
+      .header h1 { font-size: 1.8rem; }
+      .card { padding: 25px; }
+      .result-header { flex-direction: column; }
+      .stats { grid-template-columns: 1fr; }
+      .toast { left: 20px; right: 20px; max-width: none; }
     }
   </style>
 </head>
 <body>
 
-  <h1 class="main-title">🌍 Localisateur Intelligent</h1>
-  <p class="subtitle">Trouvez les meilleurs lieux au Bénin</p>
+  <div class="header">
+    <h1>🌍 Localisateur Intelligent</h1>
+    <p>Trouvez les meilleurs lieux au Bénin en temps réel</p>
+    <span class="badge">Powered by SerpAPI</span>
+  </div>
 
   <div class="container">
 
-    <!-- Section Inscription -->
-    <div class="form-section">
-      <h2>👤 Inscription</h2>
+    <!-- Inscription -->
+    <div class="card">
+      <h2>👤 Créer un compte</h2>
       
       <div class="input-group">
+        <span class="input-icon">👤</span>
         <input id="nom" placeholder="Nom" autocomplete="family-name">
       </div>
       
       <div class="input-group">
+        <span class="input-icon">✏️</span>
         <input id="prenom" placeholder="Prénom" autocomplete="given-name">
       </div>
       
       <div class="input-group">
+        <span class="input-icon">✉️</span>
         <input id="email" type="email" placeholder="Email" autocomplete="email">
       </div>
       
       <div class="input-group">
+        <span class="input-icon">🔒</span>
         <input id="password" type="password" placeholder="Mot de passe" autocomplete="new-password">
       </div>
 
-      <button onclick="register()">Créer mon compte</button>
+      <button onclick="register()" id="btn-register">🚀 S'inscrire gratuitement</button>
     </div>
 
     <div class="divider"></div>
 
-    <!-- Section Recherche -->
-    <div class="form-section">
-      <h2>🔍 Recherche de lieux</h2>
+    <!-- Recherche -->
+    <div class="card">
+      <h2>🔍 Rechercher un lieu</h2>
       
       <div class="input-group">
+        <span class="input-icon">🏷️</span>
         <select id="type">
           <option value="">-- Choisir un type --</option>
           <option>🍽️ Restaurant</option>
           <option>🏖️ Plage</option>
           <option>🍺 Buvette</option>
-          <option>🥩 Vente de viande</option>
+          <option>🥩 Boucherie</option>
+          <option>🏨 Hôtel</option>
+          <option>☕ Café</option>
+          <option>🏥 Pharmacie</option>
+          <option>⛽ Station-service</option>
         </select>
       </div>
 
       <div class="input-group">
+        <span class="input-icon">🏙️</span>
         <select id="ville">
           <option value="">-- Choisir une ville --</option>
           <option>Cotonou</option>
           <option>Abomey-Calavi</option>
           <option>Porto-Novo</option>
+          <option>Parakou</option>
+          <option>Bohicon</option>
         </select>
       </div>
 
       <div class="input-group">
+        <span class="input-icon">📍</span>
         <select id="quartier">
-          <option value="">-- Choisir un quartier --</option>
+          <option value="">-- Choisir un quartier (optionnel) --</option>
           <option>Fidjrossè</option>
           <option>Akpakpa</option>
           <option>Godomey</option>
           <option>Ste Rita</option>
+          <option>Zongo</option>
+          <option>Jéricho</option>
+          <option>Cadjehoun</option>
+          <option>Haie Vive</option>
         </select>
       </div>
 
-      <button onclick="search()">🔎 Rechercher</button>
+      <button onclick="search()" id="btn-search">🔎 Lancer la recherche</button>
 
-      <!-- Barre de chargement -->
       <div class="loader-container" id="loader">
         <div class="progress-bar" id="progress">0%</div>
       </div>
 
-      <!-- Résultat -->
-      <div class="result" id="result"></div>
+      <div class="results-container" id="results">
+        <div id="api-status"></div>
+        <div id="results-list"></div>
+        
+        <div class="stats">
+          <div class="stat-box">
+            <div class="stat-number" id="stat-total">0</div>
+            <div class="stat-label">Résultats trouvés</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="stat-avg">0</div>
+            <div class="stat-label">Note moyenne</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="stat-best">-</div>
+            <div class="stat-label">Meilleur lieu</div>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
 
-  <!-- Message de succès -->
-  <div class="success-message" id="successMsg"></div>
+  <div class="toast" id="toast"></div>
 
   <script>
+    // Utilitaires
+    function showToast(message, type = 'success', duration = 4000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type}`;
+      toast.style.display = 'block';
+      
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, duration);
+    }
+
+    function setLoading(buttonId, isLoading) {
+      const btn = document.getElementById(buttonId);
+      btn.disabled = isLoading;
+      btn.style.opacity = isLoading ? '0.6' : '1';
+    }
+
     // Inscription
     async function register() {
-      const nom = document.getElementById('nom').value;
-      const prenom = document.getElementById('prenom').value;
-      const email = document.getElementById('email').value;
+      const nom = document.getElementById('nom').value.trim();
+      const prenom = document.getElementById('prenom').value.trim();
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
 
       if (!nom || !prenom || !email || !password) {
-        showMessage('Veuillez remplir tous les champs', 'error');
+        showToast('Veuillez remplir tous les champs', 'error');
         return;
       }
+
+      if (!email.includes('@') || !email.includes('.')) {
+        showToast('Veuillez entrer un email valide', 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showToast('Le mot de passe doit faire au moins 6 caractères', 'error');
+        return;
+      }
+
+      setLoading('btn-register', true);
 
       try {
         const response = await fetch('/register', {
@@ -376,56 +623,68 @@
         });
         
         const data = await response.json();
-        showMessage(data.message, 'success');
         
-        // Vider les champs
-        document.getElementById('nom').value = '';
-        document.getElementById('prenom').value = '';
-        document.getElementById('email').value = '';
-        document.getElementById('password').value = '';
-        
+        if (data.success) {
+          showToast(data.message, 'success', 5000);
+          ['nom', 'prenom', 'email', 'password'].forEach(id => {
+            document.getElementById(id).value = '';
+          });
+        } else {
+          showToast(data.error || 'Erreur lors de l\'inscription', 'error');
+        }
       } catch (error) {
-        showMessage('Erreur lors de l\'inscription', 'error');
+        showToast('Erreur de connexion au serveur', 'error');
+      } finally {
+        setLoading('btn-register', false);
       }
     }
 
-    // Animation barre de chargement
-    function animateLoader() {
+    // Animation loader
+    async function animateLoader() {
       const loader = document.getElementById('loader');
       const progress = document.getElementById('progress');
+      const results = document.getElementById('results');
       
       loader.style.display = 'block';
-      document.getElementById('result').style.display = 'none';
+      results.style.display = 'none';
       
-      let width = 0;
-      const interval = setInterval(() => {
-        width += 2;
-        progress.style.width = width + '%';
-        progress.textContent = width + '%';
-        
-        if (width >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            loader.style.display = 'none';
-            progress.style.width = '0%';
-          }, 300);
-        }
-      }, 30);
-      
-      return new Promise(resolve => setTimeout(resolve, 1500));
+      return new Promise(resolve => {
+        let width = 0;
+        const interval = setInterval(() => {
+          width += Math.random() * 4 + 2;
+          if (width > 100) width = 100;
+          
+          progress.style.width = width + '%';
+          progress.textContent = Math.floor(width) + '%';
+          
+          if (width >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              loader.style.display = 'none';
+              progress.style.width = '0%';
+              resolve();
+            }, 200);
+          }
+        }, 25);
+      });
     }
 
     // Recherche
     async function search() {
-      const type = document.getElementById('type').value;
-      const ville = document.getElementById('ville').value;
-      const quartier = document.getElementById('quartier').value;
+      const typeSelect = document.getElementById('type');
+      const villeSelect = document.getElementById('ville');
+      const quartierSelect = document.getElementById('quartier');
+      
+      const type = typeSelect.value.replace(/[^\w\s]/g, '').trim();
+      const ville = villeSelect.value;
+      const quartier = quartierSelect.value;
 
-      if (!type || !ville || !quartier) {
-        showMessage('Veuillez sélectionner tous les critères', 'error');
+      if (!type || !ville) {
+        showToast('Veuillez sélectionner un type et une ville', 'error');
         return;
       }
 
+      setLoading('btn-search', true);
       await animateLoader();
 
       try {
@@ -437,33 +696,166 @@
         
         const data = await response.json();
         
-        const resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = `
-          <h3>${data.name}</h3>
-          <p><span class="icon">📍</span> <strong>Adresse :</strong> ${data.address}</p>
-          <p><span class="icon">📏</span> <strong>Distance :</strong> ${data.distance}</p>
-          <p><span class="icon">📝</span> <strong>Description :</strong> ${data.description}</p>
-        `;
-        resultDiv.style.display = 'block';
-        
+        if (!data.success) {
+          showToast(data.error || 'Erreur lors de la recherche', 'error');
+          return;
+        }
+
+        displayResults(data);
       } catch (error) {
-        showMessage('Erreur lors de la recherche', 'error');
+        showToast('Erreur de connexion au serveur', 'error');
+        console.error(error);
+      } finally {
+        setLoading('btn-search', false);
       }
     }
 
-    // Afficher message
-    function showMessage(text, type) {
-      const msg = document.getElementById('successMsg');
-      msg.textContent = text;
-      msg.style.background = type === 'error' 
-        ? 'linear-gradient(135deg, #eb3349, #f45c43)' 
-        : 'linear-gradient(135deg, #11998e, #38ef7d)';
-      msg.style.display = 'block';
+    // Affichage résultats
+    function displayResults(data) {
+      const resultsDiv = document.getElementById('results');
+      const apiStatus = document.getElementById('api-status');
+      const resultsList = document.getElementById('results-list');
       
+      resultsDiv.style.display = 'block';
+
+      // Badge API status
+      if (data.demo) {
+        apiStatus.innerHTML = `
+          <div class="api-status demo">
+            ⚠️ Mode Démo - Données simulées (API non configurée)
+          </div>
+        `;
+      } else {
+        apiStatus.innerHTML = `
+          <div class="api-status live">
+            ✅ Données en temps réel via Google Maps
+          </div>
+        `;
+      }
+
+      // Aucun résultat
+      if (!data.results || data.results.length === 0) {
+        resultsList.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #666;">
+            <div style="font-size: 3rem; margin-bottom: 15px;">🔍</div>
+            <p>Aucun résultat trouvé pour cette recherche.</p>
+            <p style="font-size: 0.9rem; margin-top: 10px;">Essayez avec d'autres critères.</p>
+          </div>
+        `;
+        updateStats(0, 0, '-');
+        return;
+      }
+
+      // Liste des résultats
+      resultsList.innerHTML = data.results.map((place, index) => `
+        <div class="result-card" style="animation-delay: ${index * 0.1}s">
+          ${place.thumbnail ? `
+            <img src="${place.thumbnail}" alt="${place.name}" class="thumbnail" 
+                 onerror="this.style.display='none'">
+          ` : ''}
+          
+          <div class="result-header">
+            <div>
+              <div class="result-title">${place.name}</div>
+              <div class="result-address">📍 ${place.address}</div>
+            </div>
+            ${place.rating !== 'N/A' ? `
+              <div class="result-rating">
+                ⭐ ${place.rating}
+                <span style="font-size: 0.75rem;">(${place.reviews} avis)</span>
+              </div>
+            ` : ''}
+          </div>
+          
+          <div class="result-info">
+            <div class="info-row">
+              <div class="info-icon">📞</div>
+              <span class="info-label">Téléphone :</span>
+              <span>${place.phone}</span>
+            </div>
+            <div class="info-row">
+              <div class="info-icon">📏</div>
+              <span class="info-label">Distance :</span>
+              <span>${place.distance}</span>
+            </div>
+            <div class="info-row">
+              <div class="info-icon">🕐</div>
+              <span class="info-label">Horaires :</span>
+              <span>${place.hours}</span>
+            </div>
+            <div class="info-row">
+              <div class="info-icon">📝</div>
+              <span class="info-label">Description :</span>
+              <span>${place.description}</span>
+            </div>
+            ${place.website ? `
+              <div class="info-row">
+                <div class="info-icon">🌐</div>
+                <span class="info-label">Site web :</span>
+                <a href="${place.website}" target="_blank" rel="noopener" 
+                   style="color: var(--primary); text-decoration: none; font-weight: 600;">
+                   Visiter le site →
+                </a>
+              </div>
+            ` : ''}
+            ${place.gps ? `
+              <div class="info-row">
+                <div class="info-icon">🗺️</div>
+                <span class="info-label">GPS :</span>
+                <span style="font-family: monospace; font-size: 0.9rem;">
+                  ${place.gps.latitude.toFixed(4)}, ${place.gps.longitude.toFixed(4)}
+                </span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      // Calcul stats
+      const ratings = data.results
+        .filter(r => r.rating && r.rating !== 'N/A')
+        .map(r => parseFloat(r.rating));
+      
+      const avgRating = ratings.length 
+        ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) 
+        : 'N/A';
+      
+      const bestPlace = data.results.reduce((best, current) => {
+        if (!best.rating || best.rating === 'N/A') return current;
+        if (!current.rating || current.rating === 'N/A') return best;
+        return parseFloat(current.rating) > parseFloat(best.rating) ? current : best;
+      }, data.results[0]);
+
+      updateStats(data.results.length, avgRating, bestPlace.name.substring(0, 15) + '...');
+
+      // Scroll vers résultats
       setTimeout(() => {
-        msg.style.display = 'none';
-      }, 3000);
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
     }
+
+    function updateStats(total, avg, best) {
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-avg').textContent = avg;
+      document.getElementById('stat-best').textContent = best;
+    }
+
+    // Vérifier config au chargement
+    window.addEventListener('load', async () => {
+      try {
+        const response = await fetch('/config');
+        const config = await response.json();
+        
+        console.log('Mode:', config.mode);
+        console.log('API Configurée:', config.apiConfigured);
+        
+        if (!config.apiConfigured) {
+          console.warn('⚠️ Mode démo actif - SerpAPI non configurée');
+        }
+      } catch (e) {
+        console.error('Impossible de vérifier la configuration');
+      }
+    });
   </script>
 
 </body>
