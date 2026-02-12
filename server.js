@@ -5,10 +5,12 @@ const axios = require("axios");
 const config = require("./config");
 
 const app = express();
-
-// Middleware
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static("public"));
+
+if (!fs.existsSync(config.UPLOAD_DIR)) {
+  fs.mkdirSync(config.UPLOAD_DIR, { recursive: true });
+}
 
 // ==========================================
 // BASE DE DONNÉES
@@ -27,13 +29,188 @@ function writeDB(data) {
 }
 
 // ==========================================
-// ROUTES UTILISATEURS
+// API LOCALISATION BÉNIN (Données réelles)
 // ==========================================
 
-// Inscription
+// Structure complète des localisations du Bénin par département
+const BENIN_LOCATIONS = {
+  "Littoral": {
+    "Cotonou": ["Cadjehoun", "Akpakpa", "Fidjrossè", "Ganhi", "Haie Vive", "Jéricho", "Missebo", "Sainte Rita", "Tokpa", "Zongo", "Agla", "Béthanie", "Dantokpa", "Enagnon", "Gbéto", "Houéyiho", "Kouhounou", "Midombô", "Sodjatome", "Vèdoko"],
+    "Sèmè-Podji": ["Sèmè", "Podji", "Adjarra", "Aguégué", "Avrankou", "Akpro-Missérété"]
+  },
+  "Atlantique": {
+    "Abomey-Calavi": ["Calavi", "Godomey", "Togoudo", "Hêvié", "Kpota", "Dekoungbé", "Togba", "Zinvié", "Hlanzounmè", "Dédomè", "Akassato", "Ouedo", "Togbin", "Dagbé", "Golo-Djigbé"],
+    "Allada": ["Allada", "Attogon", "Avakpa", "Ayou", "Hinvi", "Lissègazoun", "Lon-Agonmey", "Sékou", "Togba-Domè", "Tokpa"],
+    "Kpomassè": ["Kpomassè", "Amougui", "Avamè", "Azohoué-Aliho", "Azohoué-Cada", "Kpomassè-Centre", "Sèhoun", "Sohoué"],
+    "Ouidah": ["Ouidah", "Avlékété", "Dékanmey", "Gakpè", "Houakpè-Daho", "Pahou", "Savi", "Tchaada"],
+    "Sô-Ava": ["Sô-Ava", "Ahomey-Lokpo", "Dékanmey", "Ganvié", "Houédomè", "Sô-Tchanhoué"],
+    "Toffo": ["Toffo", "Agué", "Dame", "Djanglanmey", "Houéyogbé", "Kpozoun", "Sèhoué", "Toffo-Centre"],
+    "Tori-Bossito": ["Tori-Bossito", "Avamè", "Dékanmey", "Gbaffo", "Tori-Cada", "Tori-Gare"],
+    "Zè": ["Zè", "Adohoun", "Colli-Agbamè", "Dawé", "Hounli", "Sékou", "Zè-Centre"]
+  },
+  "Ouémé": {
+    "Porto-Novo": ["Adjara", "Agbodjèdo", "Agontan", "Ahossougbéta", "Ahouannonzoun", "Akébou", "Avrankou", "Ayéta", "Djidja", "Ganhi", "Houinvigue", "Missérété", "Sèmè", "Tchada", "Toffa"],
+    "Adjarra": ["Adjarra", "Agué", "Avrankou", "Dékanmey", "Gangban", "Houédomè", "Kpoguidi", "Sèmè-Kpodji"],
+    "Avrankou": ["Avrankou", "Atchoukpa", "Dékanmey", "Gbagoudo", "Houédomè", "Kpota", "Sèkou"],
+    "Bonou": ["Bonou", "Agué", "Dékanmey", "Houédomè", "Sèmè"],
+    "Dangbo": ["Dangbo", "Houédomè", "Kpozoun", "Sèmè"],
+    "Sèmè-Podji": ["Sèmè", "Podji", "Adjarra", "Aguégué"]
+  },
+  "Mono": {
+    "Lokossa": ["Lokossa", "Adjarra", "Agbodjèdo", "Bopa", "Comè", "Grand-Popo", "Houéyogbé", "Kpémé"],
+    "Athiémé": ["Athiémé", "Adjarra", "Agbodjèdo", "Bopa", "Comè"],
+    "Bopa": ["Bopa", "Agbodjèdo", "Comè", "Grand-Popo", "Houéyogbé"],
+    "Comè": ["Comè", "Agbodjèdo", "Bopa", "Grand-Popo", "Houéyogbé"],
+    "Grand-Popo": ["Grand-Popo", "Agbodjèdo", "Bopa", "Comè", "Houéyogbé"],
+    "Houéyogbé": ["Houéyogbé", "Agbodjèdo", "Bopa", "Comè", "Grand-Popo"]
+  },
+  "Zou": {
+    "Abomey": ["Abomey", "Agongointo", "Bohicon", "Covè", "Djidja", "Ouinhi", "Zagnanado", "Zogbodomey"],
+    "Bohicon": ["Bohicon", "Abomey", "Covè", "Djidja", "Ouinhi", "Zagnanado", "Zogbodomey", "Adogbé", "Agongointo", "Sèhoun", "Tohoué", "Zakpota"],
+    "Covè": ["Covè", "Abomey", "Bohicon", "Djidja", "Ouinhi", "Zagnanado"],
+    "Djidja": ["Djidja", "Abomey", "Bohicon", "Covè", "Ouinhi", "Zagnanado", "Zogbodomey"],
+    "Ouinhi": ["Ouinhi", "Abomey", "Bohicon", "Covè", "Djidja", "Zagnanado"],
+    "Zagnanado": ["Zagnanado", "Abomey", "Bohicon", "Covè", "Djidja", "Ouinhi"],
+    "Zogbodomey": ["Zogbodomey", "Abomey", "Bohicon", "Djidja", "Ouinhi", "Zagnanado"]
+  },
+  "Collines": {
+    "Savalou": ["Savalou", "Bantè", "Dassa-Zoumè", "Glazoué", "Ouèssè", "Sakété"],
+    "Bantè": ["Bantè", "Savalou", "Dassa-Zoumè", "Glazoué"],
+    "Dassa-Zoumè": ["Dassa-Zoumè", "Savalou", "Bantè", "Glazoué", "Ouèssè"],
+    "Glazoué": ["Glazoué", "Savalou", "Bantè", "Dassa-Zoumè", "Ouèssè"],
+    "Ouèssè": ["Ouèssè", "Savalou", "Dassa-Zoumè", "Glazoué"],
+    "Sakété": ["Sakété", "Savalou", "Pobè", "Kétou"]
+  },
+  "Borgou": {
+    "Parakou": ["Parakou-Centre", "Alaga", "Awolowo", "Baka", "Banikanni", "Boré", "Ganou", "Gbérédou-Baran", "Guema", "Kobourou", "Konkoli", "Péonga", "Sakérou", "Titirou", "Wansirou", "Wori", "Yanka", "Zongo"],
+    "Bembéréké": ["Bembéréké", "Bassila", "Goumori", "Kalalé", "N'Dali", "Nikki", "Ségbana", "Tchaourou"],
+    "Kalalé": ["Kalalé", "Bembéréké", "Goumori", "N'Dali", "Nikki"],
+    "N'Dali": ["N'Dali", "Bembéréké", "Kalalé", "Nikki", "Parakou"],
+    "Nikki": ["Nikki", "Bembéréké", "Kalalé", "N'Dali", "Ségbana"],
+    "Ségbana": ["Ségbana", "Bembéréké", "Kalalé", "Nikki"],
+    "Tchaourou": ["Tchaourou", "Bembéréké", "Savalou", "Parakou"]
+  },
+  "Alibori": {
+    "Kandi": ["Kandi", "Banikoara", "Gogounou", "Karimama", "Malanville", "Ségbana"],
+    "Banikoara": ["Banikoara", "Kandi", "Gogounou", "Karimama"],
+    "Gogounou": ["Gogounou", "Kandi", "Banikoara", "Karimama"],
+    "Karimama": ["Karimama", "Kandi", "Banikoara", "Gogounou"],
+    "Malanville": ["Malanville", "Kandi", "Karimama"]
+  },
+  "Atacora": {
+    "Natitingou": ["Natitingou", "Boukoumbé", "Cobly", "Kérou", "Kouandé", "Matéri", "Pehonko", "Tanguiéta", "Toucountouna"],
+    "Boukoumbé": ["Boukoumbé", "Natitingou", "Cobly", "Kérou", "Matéri"],
+    "Cobly": ["Cobly", "Natitingou", "Boukoumbé", "Kérou", "Matéri"],
+    "Kérou": ["Kérou", "Natitingou", "Boukoumbé", "Cobly", "Matéri"],
+    "Kouandé": ["Kouandé", "Natitingou", "Matéri", "Pehonko", "Tanguiéta"],
+    "Matéri": ["Matéri", "Natitingou", "Boukoumbé", "Cobly", "Kérou", "Kouandé"],
+    "Pehonko": ["Pehonko", "Natitingou", "Kouandé", "Tanguiéta"],
+    "Tanguiéta": ["Tanguiéta", "Natitingou", "Kouandé", "Matéri", "Pehonko", "Toucountouna"],
+    "Toucountouna": ["Toucountouna", "Natitingou", "Kouandé", "Tanguiéta"]
+  },
+  "Donga": {
+    "Djougou": ["Djougou", "Aplahoué", "Copargo", "Ouaké"],
+    "Aplahoué": ["Aplahoué", "Djougou", "Copargo", "Ouaké"],
+    "Copargo": ["Copargo", "Djougou", "Aplahoué", "Ouaké"],
+    "Ouaké": ["Ouaké", "Djougou", "Aplahoué", "Copargo"]
+  },
+  "Plateau": {
+    "Pobè": ["Pobè", "Adja-Ouèrè", "Ifangni", "Kétou", "Sakété"],
+    "Adja-Ouèrè": ["Adja-Ouèrè", "Pobè", "Ifangni", "Kétou"],
+    "Ifangni": ["Ifangni", "Pobè", "Adja-Ouèrè", "Kétou"],
+    "Kétou": ["Kétou", "Pobè", "Adja-Ouèrè", "Ifangni", "Sakété"],
+    "Sakété": ["Sakété", "Pobè", "Kétou"]
+  }
+};
+
+// Routes API Localisation
+app.get("/api/benin/departements", (req, res) => {
+  res.json({
+    success: true,
+    departements: Object.keys(BENIN_LOCATIONS),
+    heure_benin: config.getBeninTime(),
+    message: config.getGreeting()
+  });
+});
+
+app.get("/api/benin/communes/:departement", (req, res) => {
+  const dept = req.params.departement;
+  const communes = BENIN_LOCATIONS[dept];
+  
+  if (!communes) {
+    return res.status(404).json({ success: false, error: "Département non trouvé" });
+  }
+  
+  res.json({
+    success: true,
+    departement: dept,
+    communes: Object.keys(communes),
+    nombre: Object.keys(communes).length
+  });
+});
+
+app.get("/api/benin/quartiers/:departement/:commune", (req, res) => {
+  const { departement, commune } = req.params;
+  const quartiers = BENIN_LOCATIONS[departement]?.[commune];
+  
+  if (!quartiers) {
+    return res.status(404).json({ success: false, error: "Commune non trouvée" });
+  }
+  
+  res.json({
+    success: true,
+    departement,
+    commune,
+    quartiers,
+    nombre: quartiers.length
+  });
+});
+
+// Route pour obtenir toutes les données à plat (pour le frontend)
+app.get("/api/benin/all-locations", (req, res) => {
+  const villes = [];
+  const quartiersParVille = {};
+  
+  Object.entries(BENIN_LOCATIONS).forEach(([dept, communes]) => {
+    Object.entries(communes).forEach(([commune, quartiers]) => {
+      villes.push(commune);
+      quartiersParVille[commune] = quartiers;
+    });
+  });
+  
+  res.json({
+    success: true,
+    villes: villes.sort(),
+    quartiersParVille,
+    totalVilles: villes.length,
+    heure_benin: config.getBeninTime(),
+    message: config.getGreeting()
+  });
+});
+
+// ==========================================
+// AUTHENTIFICATION
+// ==========================================
+
+function requireAuth(req, res, next) {
+  const userId = req.headers['x-user-id'];
+  if (!userId) {
+    return res.status(401).json({ success: false, error: "Authentification requise" });
+  }
+  
+  const db = readDB();
+  const user = db.users.find(u => u.id === userId);
+  if (!user) {
+    return res.status(401).json({ success: false, error: "Session invalide" });
+  }
+  
+  req.user = user;
+  next();
+}
+
 app.post("/register", (req, res) => {
   try {
-    const { nom, prenom, email, password } = req.body;
+    const { nom, prenom, email, password, photo } = req.body;
     
     if (!nom || !prenom || !email || !password) {
       return res.status(400).json({ 
@@ -44,7 +221,6 @@ app.post("/register", (req, res) => {
 
     const db = readDB();
     
-    // Vérifier si email existe déjà
     if (db.users.find(u => u.email === email)) {
       return res.status(400).json({
         success: false,
@@ -52,12 +228,21 @@ app.post("/register", (req, res) => {
       });
     }
 
+    let photoPath = null;
+    if (photo && photo.startsWith('data:image')) {
+      const base64Data = photo.replace(/^data:image\/\w+;base64,/, "");
+      const filename = `user_${Date.now()}.png`;
+      photoPath = `/upload/${filename}`;
+      fs.writeFileSync(path.join(config.UPLOAD_DIR, filename), base64Data, 'base64');
+    }
+
     const user = {
       id: Date.now().toString(),
       nom,
       prenom,
       email,
-      password, // Note: En production, hasher le mot de passe !
+      password,
+      photo: photoPath,
       createdAt: new Date().toISOString()
     };
     
@@ -66,49 +251,64 @@ app.post("/register", (req, res) => {
 
     res.json({
       success: true,
-      message: `Bienvenue ${prenom} ! ${config.APP.AUTHOR} est heureux de vous compter parmi ses abonnés.`,
+      message: config.getGreeting(),
       user: { 
         id: user.id, 
         nom: user.nom, 
         prenom: user.prenom, 
-        email: user.email 
+        email: user.email,
+        photo: user.photo
       }
     });
   } catch (error) {
     console.error("Erreur register:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Erreur serveur lors de l'inscription" 
-    });
+    res.status(500).json({ success: false, error: "Erreur serveur" });
   }
 });
 
-// Liste utilisateurs (admin)
-app.get("/users", (req, res) => {
+app.post("/login", (req, res) => {
   try {
+    const { email, password } = req.body;
     const db = readDB();
-    res.json({ 
-      success: true, 
-      count: db.users.length,
-      users: db.users.map(u => ({ 
-        id: u.id, 
-        nom: u.nom, 
-        prenom: u.prenom, 
-        email: u.email,
-        createdAt: u.createdAt 
-      }))
+    const user = db.users.find(u => u.email === email && u.password === password);
+    
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: "Email ou mot de passe incorrect"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: config.getGreeting(),
+      user: {
+        id: user.id,
+        nom: user.nom,
+        prenom: user.prenom,
+        email: user.email,
+        photo: user.photo
+      }
     });
   } catch (error) {
     res.status(500).json({ success: false, error: "Erreur serveur" });
   }
 });
 
+app.get("/me", requireAuth, (req, res) => {
+  res.json({
+    success: true,
+    user: req.user,
+    heure_benin: config.getBeninTime(),
+    message: config.getGreeting()
+  });
+});
+
 // ==========================================
-// ROUTES RECHERCHE SERPAPI
+// RECHERCHE SERPAPI
 // ==========================================
 
-// Recherche principale
-app.post("/search", async (req, res) => {
+app.post("/search", requireAuth, async (req, res) => {
   const { type, ville, quartier } = req.body;
   
   if (!type || !ville) {
@@ -120,19 +320,13 @@ app.post("/search", async (req, res) => {
 
   try {
     const searchQuery = `${type} ${quartier ? quartier + ' ' : ''}${ville} Bénin`;
-    
-    // Vérifier si clé API est configurée
     const apiKey = config.API.SERPAPI_KEY;
     const isDemo = !apiKey || apiKey === "demo_key" || apiKey.length < 20;
 
     if (isDemo) {
-      console.log("⚠️ Mode DÉMO - Clé API non configurée");
       return res.json(generateDemoData(type, ville, quartier));
     }
 
-    // Appel API SerpAPI réel
-    console.log(`🔍 Recherche: "${searchQuery}"`);
-    
     const response = await axios.get(config.API.BASE_URL, {
       params: {
         engine: "google_maps",
@@ -147,9 +341,7 @@ app.post("/search", async (req, res) => {
       timeout: config.API.TIMEOUT
     });
 
-    // Traiter les résultats
     let results = [];
-    
     if (response.data.local_results) {
       results = Array.isArray(response.data.local_results) 
         ? response.data.local_results 
@@ -158,29 +350,19 @@ app.post("/search", async (req, res) => {
       results = [response.data.place_results];
     }
 
-    if (results.length === 0) {
-      return res.json({
-        success: true,
-        demo: false,
-        query: searchQuery,
-        results: [],
-        message: "Aucun résultat trouvé pour cette recherche"
-      });
-    }
-
-    // Formater les résultats
     const formattedResults = results.map(place => ({
+      id: place.place_id || Date.now().toString(),
       name: place.title || place.name || "Nom inconnu",
       address: place.address || `${quartier || ville}, Bénin`,
       phone: place.phone || "Non disponible",
       rating: place.rating ? place.rating.toString() : "N/A",
       reviews: place.reviews || 0,
       distance: place.distance || "À proximité",
-      description: place.description || `${type} à ${ville}`,
+      description: place.description || `${type} situé à ${ville}`,
       thumbnail: place.thumbnail || place.image || null,
       gps: place.gps_coordinates || null,
       website: place.website || place.link || null,
-      hours: place.hours ? formatHours(place.hours) : "Horaires non disponibles",
+      hours: formatHours(place.hours),
       type: type
     }));
 
@@ -190,33 +372,30 @@ app.post("/search", async (req, res) => {
       query: searchQuery,
       results: formattedResults,
       total: formattedResults.length,
-      source: "SerpAPI Google Maps"
+      heure_benin: config.getBeninTime()
     });
 
   } catch (error) {
-    console.error("❌ Erreur SerpAPI:", error.message);
-    
-    // Fallback en mode démo si erreur API
+    console.error("Erreur SerpAPI:", error.message);
     res.json(generateDemoData(type, ville, quartier));
   }
 });
 
-// Formater les horaires
 function formatHours(hours) {
   if (typeof hours === 'string') return hours;
-  if (hours.open_state) return hours.open_state;
-  if (hours.schedule) {
+  if (hours?.open_state) return hours.open_state;
+  if (hours?.schedule) {
     const today = new Date().getDay();
     const todayHours = hours.schedule.find(h => h.day === today);
-    return todayHours ? `${todayHours.time}` : "Horaires disponibles";
+    return todayHours ? todayHours.time : "Horaires disponibles";
   }
   return "Horaires non disponibles";
 }
 
-// Générer données démo
 function generateDemoData(type, ville, quartier) {
   const demoPlaces = [
     {
+      id: "1",
       name: `${type} Le Gourmet`,
       address: `${quartier || 'Centre-ville'}, ${ville}`,
       phone: "+229 97 00 00 01",
@@ -227,12 +406,12 @@ function generateDemoData(type, ville, quartier) {
       thumbnail: null,
       gps: { latitude: 6.365, longitude: 2.418 },
       website: null,
-      hours: "08:00 - 22:00",
-      type: type
+      hours: "08:00 - 22:00"
     },
     {
+      id: "2",
       name: `${type} Chez Mama`,
-      address: `Akpakpa, ${ville}`,
+      address: `Quartier résidentiel, ${ville}`,
       phone: "+229 96 00 00 02",
       rating: "4.2",
       reviews: 85,
@@ -241,12 +420,12 @@ function generateDemoData(type, ville, quartier) {
       thumbnail: null,
       gps: { latitude: 6.370, longitude: 2.425 },
       website: null,
-      hours: "07:00 - 23:00",
-      type: type
+      hours: "07:00 - 23:00"
     },
     {
+      id: "3",
       name: `${type} Premium`,
-      address: `Fidjrossè, ${ville}`,
+      address: `Zone commerciale, ${ville}`,
       phone: "+229 95 00 00 03",
       rating: "4.8",
       reviews: 256,
@@ -255,8 +434,7 @@ function generateDemoData(type, ville, quartier) {
       thumbnail: null,
       gps: { latitude: 6.360, longitude: 2.410 },
       website: "https://example.com",
-      hours: "10:00 - 00:00",
-      type: type
+      hours: "10:00 - 00:00"
     }
   ];
 
@@ -267,47 +445,26 @@ function generateDemoData(type, ville, quartier) {
     query: `${type} ${ville}`,
     results: demoPlaces,
     total: demoPlaces.length,
-    source: "Démonstration"
+    heure_benin: config.getBeninTime()
   };
 }
 
-// Route santé / config
 app.get("/config", (req, res) => {
-  const apiKey = config.API.SERPAPI_KEY;
-  const isConfigured = apiKey && apiKey !== "demo_key" && apiKey.length > 20;
-  
   res.json({
     app: config.APP,
-    apiConfigured: isConfigured,
-    port: config.PORT,
-    mode: isConfigured ? "PRODUCTION" : "DEMO"
+    heure_benin: config.getBeninTime(),
+    message: config.getGreeting()
   });
 });
-
-// Route santé
-app.get("/health", (req, res) => {
-  res.json({ 
-    status: "OK", 
-    timestamp: new Date().toISOString(),
-    version: config.APP.VERSION
-  });
-});
-
-// ==========================================
-// DÉMARRAGE
-// ==========================================
 
 app.listen(config.PORT, () => {
-  const apiKey = config.API.SERPAPI_KEY;
-  const isConfigured = apiKey && apiKey !== "demo_key" && apiKey.length > 20;
-  
   console.log(`
-  ╔═══════════════════════════════════════╗
-  ║   🌍 ${config.APP.NAME} v${config.APP.VERSION}      ║
-  ║   👤 ${config.APP.AUTHOR}                    ║
-  ╠═══════════════════════════════════════╣
-  ║   🔌 Port: ${config.PORT}                    ║
-  ║   🔑 API: ${isConfigured ? "✅ CONFIGURÉE" : "⚠️  DÉMO"}              ║
-  ╚═══════════════════════════════════════╝
+  ╔══════════════════════════════════════════════════╗
+  ║   🌍 ${config.APP.NAME} v${config.APP.VERSION}           ║
+  ║   👤 ${config.APP.AUTHOR}         ║
+  ║   🔌 Port: ${config.PORT}                               ║
+  ║   🕐 Heure Bénin: ${config.getBeninTime()}                    ║
+  ╚══════════════════════════════════════════════════╝
+  ${config.getGreeting()}
   `);
 });
