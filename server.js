@@ -20,7 +20,7 @@ function readDB() {
   try {
     return JSON.parse(fs.readFileSync(config.DB_FILE));
   } catch (error) {
-    return { users: [] };
+    return { users: [], adminLogs: [] };
   }
 }
 
@@ -29,10 +29,9 @@ function writeDB(data) {
 }
 
 // ==========================================
-// API LOCALISATION BÉNIN (Données réelles)
+// DONNÉES BÉNIN (inchangées)
 // ==========================================
 
-// Structure complète des localisations du Bénin par département
 const BENIN_LOCATIONS = {
   "Littoral": {
     "Cotonou": ["Cadjehoun", "Akpakpa", "Fidjrossè", "Ganhi", "Haie Vive", "Jéricho", "Missebo", "Sainte Rita", "Tokpa", "Zongo", "Agla", "Béthanie", "Dantokpa", "Enagnon", "Gbéto", "Houéyiho", "Kouhounou", "Midombô", "Sodjatome", "Vèdoko"],
@@ -123,7 +122,10 @@ const BENIN_LOCATIONS = {
   }
 };
 
-// Routes API Localisation
+// ==========================================
+// ROUTES LOCALISATION (inchangées)
+// ==========================================
+
 app.get("/api/benin/departements", (req, res) => {
   res.json({
     success: true,
@@ -166,7 +168,6 @@ app.get("/api/benin/quartiers/:departement/:commune", (req, res) => {
   });
 });
 
-// Route pour obtenir toutes les données à plat (pour le frontend)
 app.get("/api/benin/all-locations", (req, res) => {
   const villes = [];
   const quartiersParVille = {};
@@ -208,6 +209,20 @@ function requireAuth(req, res, next) {
   next();
 }
 
+// Vérifier si admin
+function requireAdmin(req, res, next) {
+  const userId = req.headers['x-user-id'];
+  const db = readDB();
+  const user = db.users.find(u => u.id === userId);
+  
+  if (!user || !user.isAdmin) {
+    return res.status(403).json({ success: false, error: "Accès réservé aux administrateurs" });
+  }
+  
+  req.user = user;
+  next();
+}
+
 app.post("/register", (req, res) => {
   try {
     const { nom, prenom, email, password, photo } = req.body;
@@ -228,6 +243,9 @@ app.post("/register", (req, res) => {
       });
     }
 
+    // Vérifier si c'est l'admin qui s'inscrit
+    const isAdmin = config.isAdmin(nom, prenom, email);
+    
     let photoPath = null;
     if (photo && photo.startsWith('data:image')) {
       const base64Data = photo.replace(/^data:image\/\w+;base64,/, "");
@@ -243,21 +261,31 @@ app.post("/register", (req, res) => {
       email,
       password,
       photo: photoPath,
+      isAdmin: isAdmin,
+      role: isAdmin ? 'admin' : 'user',
       createdAt: new Date().toISOString()
     };
     
     db.users.push(user);
     writeDB(db);
 
+    // Message spécial pour l'admin
+    let message = config.getGreeting();
+    if (isAdmin) {
+      message = `🎉 Bienvenue Kouamé Appolinaire ! Développeur web de ce site, vous êtes maintenant connecté en tant qu'Administrateur Suprême ! 👑`;
+    }
+
     res.json({
       success: true,
-      message: config.getGreeting(),
+      message: message,
+      isAdmin: isAdmin,
       user: { 
         id: user.id, 
         nom: user.nom, 
         prenom: user.prenom, 
         email: user.email,
-        photo: user.photo
+        photo: user.photo,
+        isAdmin: user.isAdmin
       }
     });
   } catch (error) {
@@ -279,15 +307,22 @@ app.post("/login", (req, res) => {
       });
     }
 
+    let message = config.getGreeting();
+    if (user.isAdmin) {
+      message = `👑 Bienvenue Kouamé Appolinaire ! Votre royaume vous attend, Chef !`;
+    }
+
     res.json({
       success: true,
-      message: config.getGreeting(),
+      message: message,
+      isAdmin: user.isAdmin,
       user: {
         id: user.id,
         nom: user.nom,
         prenom: user.prenom,
         email: user.email,
-        photo: user.photo
+        photo: user.photo,
+        isAdmin: user.isAdmin
       }
     });
   } catch (error) {
@@ -305,7 +340,83 @@ app.get("/me", requireAuth, (req, res) => {
 });
 
 // ==========================================
-// RECHERCHE SERPAPI
+// ROUTES ADMIN
+// ==========================================
+
+// Tableau de bord admin
+app.get("/admin/dashboard", requireAdmin, (req, res) => {
+  const db = readDB();
+  
+  const stats = {
+    totalUsers: db.users.length,
+    totalAdmins: db.users.filter(u => u.isAdmin).length,
+    recentUsers: db.users
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 5)
+      .map(u => ({
+        id: u.id,
+        nom: u.nom,
+        prenom: u.prenom,
+        email: u.email,
+        photo: u.photo,
+        createdAt: u.createdAt
+      }))
+  };
+  
+  res.json({
+    success: true,
+    stats,
+    heure_benin: config.getBeninTime()
+  });
+});
+
+// Liste complète des utilisateurs
+app.get("/admin/users", requireAdmin, (req, res) => {
+  const db = readDB();
+  
+  const users = db.users.map(u => ({
+    id: u.id,
+    nom: u.nom,
+    prenom: u.prenom,
+    email: u.email,
+    photo: u.photo,
+    isAdmin: u.isAdmin,
+    createdAt: u.createdAt
+  }));
+  
+  res.json({
+    success: true,
+    total: users.length,
+    users: users.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  });
+});
+
+// Supprimer un utilisateur
+app.delete("/admin/users/:id", requireAdmin, (req, res) => {
+  const userId = req.params.id;
+  const db = readDB();
+  
+  const userIndex = db.users.findIndex(u => u.id === userId);
+  if (userIndex === -1) {
+    return res.status(404).json({ success: false, error: "Utilisateur non trouvé" });
+  }
+  
+  // Empêcher de supprimer son propre compte
+  if (db.users[userIndex].id === req.user.id) {
+    return res.status(400).json({ success: false, error: "Vous ne pouvez pas supprimer votre propre compte" });
+  }
+  
+  db.users.splice(userIndex, 1);
+  writeDB(db);
+  
+  res.json({
+    success: true,
+    message: "Utilisateur supprimé avec succès"
+  });
+});
+
+// ==========================================
+// RECHERCHE SERPAPI (inchangée)
 // ==========================================
 
 app.post("/search", requireAuth, async (req, res) => {
@@ -464,7 +575,7 @@ app.listen(config.PORT, () => {
   ║   👤 ${config.APP.AUTHOR}         ║
   ║   🔌 Port: ${config.PORT}                               ║
   ║   🕐 Heure Bénin: ${config.getBeninTime()}                    ║
+  ║   👑 Admin: Sossou Kouamé configuré              ║
   ╚══════════════════════════════════════════════════╝
-  ${config.getGreeting()}
   `);
 });
