@@ -14,20 +14,56 @@ const config = {
   
   APP: {
     NAME: "Localisateur Bénin",
-    VERSION: "3.2.0",
+    VERSION: "4.0.0",
     AUTHOR: "Sossou Kouamé Appolinaire"
   },
 
   TIMEZONE: "Africa/Porto-Novo",
 
-  // Configuration Admin
   ADMIN: {
-    NOM: "Sossou",
-    PRENOM: "Kouamé",
-    EMAIL: "sossoukouam@gmail.com",
-    PASSWORD: "admin123", // En production, utiliser un hash
-    ROLE: "super_admin"
+    NOMS: ["sossou", "sossou "],
+    PRENOMS: ["kouamé", "kouame", "kouamé ", "kouame "],
+    EMAILS: ["sossoukouam@gmail.com", "sossoukouam@gmail.com "],
+    PASSWORD: "admin123"
   },
+
+  COMMERCE_CATEGORIES: [
+    "🐷 Vente de viande de porc (waké, toubani, atachi)",
+    "🍖 Boucherie",
+    "🌽 Vente de céréales (maïs, mil, sorgho)",
+    "🍠 Produits dérivés (gari, amidon, pâte)",
+    "🐟 Poissonnerie",
+    "🥬 Marché de légumes",
+    "🥜 Noix et graines",
+    "🍌 Fruits tropicaux",
+    "🥤 Buvette / Bar",
+    "🍲 Restaurant local",
+    "🛒 Boutique générale",
+    "📱 Téléphonie / Accessoires",
+    "👕 Vêtements / Mode",
+    "💇 Coiffure / Salon de beauté",
+    "🔧 Mécanique / Réparation",
+    "⛽ Station-service",
+    "🏨 Hôtel / Auberge",
+    "📷 Photographie / Studio",
+    "🎵 Musique / Sonorisation",
+    "🏥 Pharmacie / Herboristerie",
+    "📚 Papeterie / Librairie",
+    "🛋️ Meubles / Décoration",
+    "⚡ Électricien / Électronique",
+    "🚿 Plomberie / Sanitaire",
+    "🏗️ Matériaux de construction",
+    "🚕 Transport / Taxi",
+    "📦 Livraison / Logistique",
+    "🌾 Agriculture / Jardinage",
+    "🐔 Élevage / Volaille",
+    "💰 Services financiers",
+    "📱 Cybercafé / Services numériques",
+    "🎓 Formation / École",
+    "⚽ Loisirs / Sport",
+    "🎉 Événementiel / Animation",
+    "Autre (préciser)"
+  ],
 
   GREETINGS: {
     morning: [
@@ -61,6 +97,23 @@ const config = {
   }
 };
 
+config.isAdmin = function(nom, prenom, email) {
+  const cleanNom = nom.toLowerCase().trim();
+  const cleanPrenom = prenom.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const cleanEmail = email.toLowerCase().trim();
+  
+  const checkNom = this.ADMIN.NOMS.some(n => cleanNom === n.toLowerCase().trim());
+  const checkPrenom = this.ADMIN.PRENOMS.some(p => {
+    const cleanP = p.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return cleanPrenom === cleanP;
+  });
+  const checkEmail = this.ADMIN.EMAILS.some(e => cleanEmail === e.toLowerCase().trim());
+  
+  console.log('Vérification admin:', { nom: cleanNom, prenom: cleanPrenom, email: cleanEmail, checkNom, checkPrenom, checkEmail });
+  
+  return checkNom && checkPrenom && checkEmail;
+};
+
 config.getGreeting = function() {
   const now = new Date();
   const beninHour = now.getUTCHours() + 1;
@@ -84,10 +137,5 @@ config.getBeninTime = function() {
   });
 };
 
-config.isAdmin = function(nom, prenom, email) {
-  return nom === this.ADMIN.NOM && 
-         prenom === this.ADMIN.PRENOM && 
-         email === this.ADMIN.EMAIL;
-};
-
 module.exports = config;
+    
