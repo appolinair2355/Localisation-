@@ -14,14 +14,21 @@ const config = {
   
   APP: {
     NAME: "Localisateur Bénin",
-    VERSION: "3.1.0",
+    VERSION: "3.2.0",
     AUTHOR: "Sossou Kouamé Appolinaire"
   },
 
-  // Fuseau horaire Bénin (UTC+1)
   TIMEZONE: "Africa/Porto-Novo",
 
-  // Messages drôles selon l'heure
+  // Configuration Admin
+  ADMIN: {
+    NOM: "Sossou",
+    PRENOM: "Kouamé",
+    EMAIL: "sossoukouam@gmail.com",
+    PASSWORD: "admin123", // En production, utiliser un hash
+    ROLE: "super_admin"
+  },
+
   GREETINGS: {
     morning: [
       "Bonjour ! ☀️ Sossou Kouamé Appolinaire vous souhaite la bienvenue !",
@@ -54,10 +61,9 @@ const config = {
   }
 };
 
-// Fonction pour obtenir le message selon l'heure du Bénin
 config.getGreeting = function() {
   const now = new Date();
-  const beninHour = now.getUTCHours() + 1; // UTC+1 pour le Bénin
+  const beninHour = now.getUTCHours() + 1;
   
   let period;
   if (beninHour >= 5 && beninHour < 12) period = 'morning';
@@ -69,7 +75,6 @@ config.getGreeting = function() {
   return messages[Math.floor(Math.random() * messages.length)];
 };
 
-// Fonction pour obtenir l'heure du Bénin formatée
 config.getBeninTime = function() {
   return new Date().toLocaleTimeString('fr-FJ', {
     timeZone: 'Africa/Porto-Novo',
@@ -79,5 +84,10 @@ config.getBeninTime = function() {
   });
 };
 
+config.isAdmin = function(nom, prenom, email) {
+  return nom === this.ADMIN.NOM && 
+         prenom === this.ADMIN.PRENOM && 
+         email === this.ADMIN.EMAIL;
+};
+
 module.exports = config;
-      
