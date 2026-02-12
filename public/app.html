@@ -36,7 +36,6 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Header */
     .top-bar {
       background: rgba(255,255,255,0.95);
       color: #333;
@@ -174,14 +173,12 @@
       margin: 8px 0;
     }
 
-    /* Contenu */
     .main-content {
       max-width: 1200px;
       margin: 0 auto;
       padding: 30px;
     }
 
-    /* Welcome Hero */
     .welcome-hero {
       text-align: center;
       margin-bottom: 40px;
@@ -234,8 +231,38 @@
       font-family: 'Courier New', monospace;
     }
 
-    /* Cartes de recherche et résultats (inchangées) */
-    .search-card {
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .quick-action-btn {
+      background: rgba(255,255,255,0.95);
+      color: #333;
+      padding: 25px;
+      border-radius: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .quick-action-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .quick-action-btn .icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .search-card, .add-place-card {
       background: rgba(255,255,255,0.95);
       color: #333;
       padding: 40px;
@@ -244,15 +271,42 @@
       backdrop-filter: blur(20px);
       margin-bottom: 30px;
       animation: slideUp 0.6s ease-out;
+      display: none;
     }
 
-    .search-card h2 {
-      color: var(--primary);
+    .search-card.show, .add-place-card.show {
+      display: block;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 25px;
+    }
+
+    .card-header h2 {
+      color: var(--primary);
       font-size: 1.5rem;
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    .close-btn {
+      background: #f0f0f0;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s;
+    }
+
+    .close-btn:hover {
+      background: #e0e0e0;
+      transform: rotate(90deg);
     }
 
     .form-grid {
@@ -274,7 +328,7 @@
       font-size: 0.9rem;
     }
 
-    select, input {
+    select, input, textarea {
       width: 100%;
       padding: 15px;
       border: 2px solid #e0e0e0;
@@ -282,16 +336,71 @@
       font-size: 16px;
       transition: all 0.3s;
       background: #fafafa;
+      font-family: inherit;
     }
 
-    select:focus, input:focus {
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    select:focus, input:focus, textarea:focus {
       outline: none;
       border-color: var(--primary);
       background: white;
       box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     }
 
-    .search-btn {
+    .photo-upload-place {
+      border: 3px dashed #ddd;
+      border-radius: 15px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      background: #fafafa;
+    }
+
+    .photo-upload-place:hover {
+      border-color: var(--primary);
+      background: rgba(102, 126, 234, 0.05);
+    }
+
+    .photo-upload-place.has-image {
+      border-color: #4caf50;
+      background: rgba(76, 175, 80, 0.05);
+    }
+
+    .photo-preview-place {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .photo-preview-place.show {
+      display: block;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px;
+      background: #fafafa;
+      border-radius: 12px;
+      border: 2px solid #e0e0e0;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .search-btn, .submit-btn {
       width: 100%;
       padding: 18px;
       background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
@@ -308,46 +417,66 @@
       gap: 10px;
     }
 
-    .search-btn:hover:not(:disabled) {
+    .search-btn:hover:not(:disabled), .submit-btn:hover:not(:disabled) {
       transform: translateY(-3px);
       box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
     }
 
-    .search-btn:disabled {
+    .search-btn:disabled, .submit-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
 
-    /* Admin Panel */
-    .admin-panel {
+    .loader-container {
+      display: none;
+      margin-top: 25px;
+      background: #f0f0f0;
+      border-radius: 30px;
+      overflow: hidden;
+      height: 40px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+      background-size: 200% 100%;
+      border-radius: 30px;
+      transition: width 0.3s ease;
+      animation: shimmer 2s infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .results-section, .my-places-section, .admin-panel {
       display: none;
       animation: fadeInUp 0.6s ease-out;
     }
 
-    .admin-panel.show {
+    .results-section.show, .my-places-section.show, .admin-panel.show {
       display: block;
     }
 
-    .admin-header {
+    .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
       flex-wrap: wrap;
       gap: 15px;
     }
 
-    .admin-title {
-      font-size: 2rem;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .admin-title::before {
-      content: '👑';
-      font-size: 2.5rem;
+    .section-title {
+      font-size: 1.8rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
 
     .back-btn {
@@ -369,7 +498,200 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
-    /* Stats Admin */
+    .api-status {
+      display: inline-block;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .api-status.live {
+      background: rgba(17, 153, 142, 0.9);
+    }
+
+    .api-status.demo {
+      background: rgba(240, 147, 251, 0.9);
+      animation: pulse 2s infinite;
+    }
+
+    .results-grid, .places-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 25px;
+    }
+
+    .place-card {
+      background: white;
+      color: #333;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    .place-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+
+    .place-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    }
+
+    .place-content {
+      padding: 25px;
+    }
+
+    .place-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+    }
+
+    .place-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.3;
+    }
+
+    .place-category {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .place-address {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .place-info {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    .info-icon {
+      width: 35px;
+      height: 35px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .place-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .action-btn.primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+    }
+
+    .action-btn.secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .action-btn.success {
+      background: linear-gradient(135deg, var(--success), #38ef7d);
+      color: white;
+    }
+
+    .action-btn.danger {
+      background: linear-gradient(135deg, var(--danger), #c0392b);
+      color: white;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .verified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(135deg, var(--success), #38ef7d);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.9);
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      color: #333;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+
+    /* Admin Panel Styles */
     .admin-stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -414,16 +736,16 @@
       font-weight: 500;
     }
 
-    /* Liste des utilisateurs */
-    .users-section {
+    .users-section, .places-section {
       background: rgba(255,255,255,0.95);
       color: #333;
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      margin-bottom: 30px;
     }
 
-    .users-section h3 {
+    .users-section h3, .places-section h3 {
       color: var(--primary);
       margin-bottom: 20px;
       font-size: 1.3rem;
@@ -507,227 +829,17 @@
       box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
     }
 
-    /* Loader et résultats (inchangés) */
-    .loader-container {
-      display: none;
-      margin-top: 25px;
-      background: #f0f0f0;
-      border-radius: 30px;
-      overflow: hidden;
-      height: 40px;
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
     }
 
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
-      background-size: 200% 100%;
-      border-radius: 30px;
-      transition: width 0.3s ease;
-      animation: shimmer 2s infinite;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-    }
-
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    .results-section {
-      display: none;
-      animation: fadeInUp 0.6s ease-out;
-    }
-
-    .results-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .results-title {
-      font-size: 1.8rem;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    }
-
-    .api-status {
-      display: inline-block;
-      padding: 8px 20px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
+    .empty-state-icon {
+      font-size: 4rem;
       margin-bottom: 20px;
     }
 
-    .api-status.live {
-      background: rgba(17, 153, 142, 0.9);
-    }
-
-    .api-status.demo {
-      background: rgba(240, 147, 251, 0.9);
-      animation: pulse 2s infinite;
-    }
-
-    .results-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 25px;
-    }
-
-    .place-card {
-      background: white;
-      color: #333;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-      transition: all 0.3s ease;
-      animation: fadeInUp 0.5s ease-out;
-    }
-
-    .place-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-    }
-
-    .place-image {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-    }
-
-    .place-content {
-      padding: 25px;
-    }
-
-    .place-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-      margin-bottom: 15px;
-    }
-
-    .place-name {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--primary);
-      line-height: 1.3;
-    }
-
-    .place-rating {
-      background: linear-gradient(135deg, #ffd700, #ffaa00);
-      color: white;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      white-space: nowrap;
-    }
-
-    .place-address {
-      color: #666;
-      font-size: 0.95rem;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .place-info {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .info-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.95rem;
-      color: #555;
-    }
-
-    .info-icon {
-      width: 35px;
-      height: 35px;
-      background: rgba(102, 126, 234, 0.1);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-    }
-
-    .place-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .action-btn {
-      flex: 1;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-align: center;
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
-
-    .action-btn.primary {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-    }
-
-    .action-btn.secondary {
-      background: #f0f0f0;
-      color: #333;
-    }
-
-    .action-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-
-    .stats-bar {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-top: 30px;
-    }
-
-    .stat-card {
-      background: rgba(255,255,255,0.9);
-      padding: 25px;
-      border-radius: 15px;
-      text-align: center;
-      color: #333;
-    }
-
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .stat-label {
-      color: #666;
-      font-size: 0.9rem;
-      margin-top: 5px;
-    }
-
-    /* Animations */
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
@@ -778,11 +890,11 @@
         font-size: 2rem;
       }
       
-      .admin-title {
-        font-size: 1.5rem;
+      .quick-actions {
+        grid-template-columns: 1fr;
       }
       
-      .search-card, .users-section {
+      .search-card, .add-place-card, .users-section, .places-section {
         padding: 25px;
       }
       
@@ -790,7 +902,7 @@
         grid-template-columns: 1fr;
       }
       
-      .results-grid {
+      .results-grid, .places-grid {
         grid-template-columns: 1fr;
       }
       
@@ -801,6 +913,11 @@
       .user-card {
         flex-direction: column;
         text-align: center;
+      }
+      
+      .section-header {
+        flex-direction: column;
+        align-items: stretch;
       }
     }
   </style>
@@ -830,6 +947,12 @@
       <div class="dropdown-item admin-item" id="menu-admin" style="display: none;" onclick="openAdminPanel()">
         👑 Espace Admin
       </div>
+      <div class="dropdown-item" onclick="showAddPlace()">
+        ➕ Ajouter mon commerce
+      </div>
+      <div class="dropdown-item" onclick="showMyPlaces()">
+        🏪 Mes commerces
+      </div>
       <div class="dropdown-item" onclick="goHome()">
         🏠 Accueil
       </div>
@@ -846,8 +969,8 @@
   <!-- Contenu principal -->
   <div class="main-content">
     
-    <!-- Section de recherche -->
-    <div id="search-section">
+    <!-- Section Accueil -->
+    <div id="home-section">
       <div class="welcome-hero">
         <div class="time-display" id="time-display">--:--</div>
         <h1 id="greeting-message">Chargement du message...</h1>
@@ -857,81 +980,199 @@
         </div>
       </div>
 
-      <div class="search-card">
-        <h2>🔍 Que recherchez-vous aujourd'hui ?</h2>
-        
-        <div class="form-grid">
-          <div class="input-group">
-            <label>Type de lieu</label>
-            <select id="search-type">
-              <option value="">-- Choisir --</option>
-              <option>🍽️ Restaurant</option>
-              <option>🏖️ Plage</option>
-              <option>🍺 Buvette</option>
-              <option>🥩 Boucherie</option>
-              <option>🏨 Hôtel</option>
-              <option>☕ Café</option>
-              <option>🏥 Pharmacie</option>
-              <option>⛽ Station-service</option>
-              <option>🏦 Banque</option>
-              <option>🛒 Supermarché</option>
-              <option>🎓 École</option>
-              <option>🏛️ Administration</option>
-            </select>
-          </div>
-
-          <div class="input-group">
-            <label>Ville / Commune</label>
-            <select id="search-ville" onchange="updateQuartiers()">
-              <option value="">-- Choisir une ville --</option>
-            </select>
-          </div>
-
-          <div class="input-group">
-            <label>Quartier (optionnel)</label>
-            <select id="search-quartier" disabled>
-              <option value="">-- D'abord choisir une ville --</option>
-            </select>
-          </div>
-        </div>
-
-        <button class="search-btn" onclick="search()" id="btn-search">
-          🔎 Rechercher des lieux
+      <div class="quick-actions">
+        <button class="quick-action-btn" onclick="showSearch()">
+          <span class="icon">🔍</span>
+          Rechercher un lieu
         </button>
-
-        <div class="loader-container" id="loader">
-          <div class="progress-bar" id="progress">0%</div>
-        </div>
+        <button class="quick-action-btn" onclick="showAddPlace()">
+          <span class="icon">➕</span>
+          Ajouter mon commerce
+        </button>
+        <button class="quick-action-btn" onclick="showMyPlaces()">
+          <span class="icon">🏪</span>
+          Mes commerces
+        </button>
+        <button class="quick-action-btn" id="admin-quick-btn" style="display: none;" onclick="openAdminPanel()">
+          <span class="icon">👑</span>
+          Espace Admin
+        </button>
       </div>
     </div>
 
-    <!-- Section Admin -->
-    <div id="admin-panel" class="admin-panel">
-      <div class="admin-header">
-        <h2 class="admin-title">Tableau de bord Administrateur</h2>
-        <button class="back-btn" onclick="closeAdminPanel()">
-          ← Retour à l'accueil
-        </button>
+    <!-- Section Recherche -->
+    <div id="search-section" class="search-card">
+      <div class="card-header">
+        <h2>🔍 Rechercher un lieu</h2>
+        <button class="close-btn" onclick="hideSearch()">✕</button>
       </div>
-
-      <div class="admin-stats" id="admin-stats">
-        <!-- Rempli dynamiquement -->
-      </div>
-
-      <div class="users-section">
-        <h3>👥 Liste complète des utilisateurs inscrits</h3>
-        <div class="users-grid" id="users-list">
-          <!-- Rempli dynamiquement -->
+      
+      <div class="form-grid">
+        <div class="input-group">
+          <label>Type de lieu</label>
+          <select id="search-type">
+            <option value="">-- Choisir --</option>
+            <option>🐷 Vente de viande de porc (waké, toubani, atachi)</option>
+            <option>🍖 Boucherie</option>
+            <option>🌽 Vente de céréales (maïs, mil, sorgho)</option>
+            <option>🍠 Produits dérivés (gari, amidon, pâte)</option>
+            <option>🐟 Poissonnerie</option>
+            <option>🥬 Marché de légumes</option>
+            <option>🥜 Noix et graines</option>
+            <option>🍌 Fruits tropicaux</option>
+            <option>🥤 Buvette / Bar</option>
+            <option>🍲 Restaurant local</option>
+            <option>🛒 Boutique générale</option>
+            <option>📱 Téléphonie / Accessoires</option>
+            <option>👕 Vêtements / Mode</option>
+            <option>💇 Coiffure / Salon de beauté</option>
+            <option>🔧 Mécanique / Réparation</option>
+            <option>⛽ Station-service</option>
+            <option>🏨 Hôtel / Auberge</option>
+            <option>📷 Photographie / Studio</option>
+            <option>🏥 Pharmacie / Herboristerie</option>
+          </select>
         </div>
+
+        <div class="input-group">
+          <label>Ville / Commune</label>
+          <select id="search-ville" onchange="updateQuartiers()">
+            <option value="">-- Choisir une ville --</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Quartier (optionnel)</label>
+          <select id="search-quartier" disabled>
+            <option value="">-- D'abord choisir une ville --</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="search-btn" onclick="search()" id="btn-search">
+        🔎 Rechercher des lieux
+      </button>
+
+      <div class="loader-container" id="loader">
+        <div class="progress-bar" id="progress">0%</div>
       </div>
     </div>
 
-    <!-- Section résultats -->
+    <!-- Section Ajouter un lieu -->
+    <div id="add-place-section" class="add-place-card">
+      <div class="card-header">
+        <h2>➕ Ajouter mon commerce</h2>
+        <button class="close-btn" onclick="hideAddPlace()">✕</button>
+      </div>
+      
+      <div class="form-grid">
+        <div class="input-group">
+          <label>Nom du commerce *</label>
+          <input type="text" id="place-nom" placeholder="Ex: Chez Mama - Vente de porc" required>
+        </div>
+
+        <div class="input-group">
+          <label>Catégorie *</label>
+          <select id="place-categorie" required>
+            <option value="">-- Choisir une catégorie --</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Ville / Commune *</label>
+          <select id="place-ville" required>
+            <option value="">-- Choisir --</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Quartier</label>
+          <input type="text" id="place-quartier" placeholder="Ex: Akpakpa">
+        </div>
+      </div>
+
+      <div class="input-group" style="margin-bottom: 20px;">
+        <label>Description détaillée</label>
+        <textarea id="place-description" placeholder="Décrivez votre commerce, vos produits, vos spécialités..."></textarea>
+      </div>
+
+      <div class="input-group" style="margin-bottom: 20px;">
+        <label>Adresse précise *</label>
+        <textarea id="place-adresse" placeholder="Ex: En face de l'église Saint Pierre, non loin du marché Dantokpa" required></textarea>
+      </div>
+
+      <div class="form-grid">
+        <div class="input-group">
+          <label>Téléphone *</label>
+          <input type="tel" id="place-telephone" placeholder="+229 97 00 00 00" required>
+        </div>
+
+        <div class="input-group">
+          <label>WhatsApp</label>
+          <input type="tel" id="place-whatsapp" placeholder="+229 97 00 00 00">
+        </div>
+
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="place-email" placeholder="contact@example.com">
+        </div>
+
+        <div class="input-group">
+          <label>Site web</label>
+          <input type="url" id="place-website" placeholder="https://www.example.com">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="input-group">
+          <label>Facebook</label>
+          <input type="text" id="place-facebook" placeholder="facebook.com/votrepage">
+        </div>
+
+        <div class="input-group">
+          <label>Instagram</label>
+          <input type="text" id="place-instagram" placeholder="@votrecompte">
+        </div>
+
+        <div class="input-group">
+          <label>Horaires d'ouverture</label>
+          <input type="text" id="place-horaires" placeholder="Lun-Sam: 8h-20h, Dim: fermé">
+        </div>
+
+        <div class="input-group">
+          <label>Moyens de paiement acceptés</label>
+          <input type="text" id="place-paiement" placeholder="MTN MoMo, Moov Money, espèces">
+        </div>
+      </div>
+
+      <div class="checkbox-group" style="margin-bottom: 20px;">
+        <input type="checkbox" id="place-livraison">
+        <label for="place-livraison" style="margin: 0;">Je propose la livraison à domicile</label>
+      </div>
+
+      <div class="input-group" style="margin-bottom: 25px;">
+        <label>Photo du commerce *</label>
+        <div class="photo-upload-place" id="place-photo-upload" onclick="document.getElementById('place-photo-input').click()">
+          <img id="place-photo-preview" class="photo-preview-place">
+          <div id="place-photo-text">
+            📷 Cliquez pour ajouter une photo de votre commerce<br>
+            <small>(obligatoire - max 2MB)</small>
+          </div>
+          <input type="file" id="place-photo-input" accept="image/*" style="display: none;" onchange="handlePlacePhoto(event)" required>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="submitPlace()" id="btn-submit-place">
+        ✅ Enregistrer mon commerce
+      </button>
+    </div>
+
+    <!-- Section Résultats -->
     <div id="results-section" class="results-section">
-      <div class="results-header">
-        <h2 class="results-title">📍 Résultats trouvés</h2>
-        <button class="back-btn" onclick="backToSearch()">
-          ← Nouvelle recherche
+      <div class="section-header">
+        <h2 class="section-title">📍 Résultats trouvés</h2>
+        <button class="back-btn" onclick="backToHome()">
+          ← Retour à l'accueil
         </button>
       </div>
 
@@ -955,12 +1196,47 @@
       </div>
     </div>
 
+    <!-- Section Mes commerces -->
+    <div id="my-places-section" class="my-places-section">
+      <div class="section-header">
+        <h2 class="section-title">🏪 Mes commerces</h2>
+        <button class="back-btn" onclick="backToHome()">
+          ← Retour à l'accueil
+        </button>
+      </div>
+
+      <div id="my-places-grid" class="places-grid"></div>
+    </div>
+
+    <!-- Section Admin -->
+    <div id="admin-panel" class="admin-panel">
+      <div class="section-header">
+        <h2 class="section-title">👑 Tableau de bord Administrateur</h2>
+        <button class="back-btn" onclick="backToHome()">
+          ← Retour à l'accueil
+        </button>
+      </div>
+
+      <div class="admin-stats" id="admin-stats"></div>
+
+      <div class="places-section">
+        <h3>🏪 Tous les commerces enregistrés</h3>
+        <div id="admin-places-grid" class="places-grid"></div>
+      </div>
+
+      <div class="users-section">
+        <h3>👥 Tous les utilisateurs inscrits</h3>
+        <div id="admin-users-list" class="users-grid"></div>
+      </div>
+    </div>
+
   </div>
 
   <script>
     let currentUser = null;
     let allLocations = null;
     let quartiersParVille = {};
+    let placePhotoBase64 = null;
 
     const funnyQuotes = [
       "Même les poules du Bénin savent que ce site est le meilleur ! 🐔",
@@ -985,7 +1261,6 @@
       startClock();
       updateGreeting();
       
-      // Si admin, charger les stats
       if (currentUser.isAdmin) {
         loadAdminStats();
       }
@@ -998,12 +1273,11 @@
         document.getElementById('user-avatar').src = currentUser.photo;
       }
       
-      // Afficher badge admin si applicable
       if (currentUser.isAdmin) {
         document.getElementById('admin-badge').style.display = 'block';
         document.getElementById('menu-admin').style.display = 'flex';
+        document.getElementById('admin-quick-btn').style.display = 'block';
         
-        // Message spécial admin
         const adminWelcome = document.getElementById('admin-special-welcome');
         adminWelcome.innerHTML = `
           <div class="admin-welcome">
@@ -1015,6 +1289,7 @@
       }
       
       loadLocations();
+      loadCategories();
       
       const randomQuote = funnyQuotes[Math.floor(Math.random() * funnyQuotes.length)];
       document.getElementById('funny-quote').textContent = `"${randomQuote}"`;
@@ -1076,15 +1351,35 @@
         allLocations = data.villes;
         quartiersParVille = data.quartiersParVille;
         
-        const select = document.getElementById('search-ville');
-        allLocations.forEach(ville => {
-          const option = document.createElement('option');
-          option.value = ville;
-          option.textContent = ville;
-          select.appendChild(option);
+        // Remplir selects
+        ['search-ville', 'place-ville'].forEach(id => {
+          const select = document.getElementById(id);
+          allLocations.forEach(ville => {
+            const option = document.createElement('option');
+            option.value = ville;
+            option.textContent = ville;
+            select.appendChild(option);
+          });
         });
       } catch (error) {
         console.error('Erreur chargement villes:', error);
+      }
+    }
+
+    async function loadCategories() {
+      try {
+        const response = await fetch('/api/categories');
+        const data = await response.json();
+        
+        const select = document.getElementById('place-categorie');
+        data.categories.forEach(cat => {
+          const option = document.createElement('option');
+          option.value = cat;
+          option.textContent = cat;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Erreur chargement catégories:', error);
       }
     }
 
@@ -1112,130 +1407,215 @@
       quartierSelect.disabled = false;
     }
 
-    // ============ ADMIN FUNCTIONS ============
-    
-    async function loadAdminStats() {
+    // ============ NAVIGATION ============
+
+    function showSearch() {
+      hideAllSections();
+      document.getElementById('search-section').classList.add('show');
+    }
+
+    function hideSearch() {
+      document.getElementById('search-section').classList.remove('show');
+      showHome();
+    }
+
+    function showAddPlace() {
+      hideAllSections();
+      document.getElementById('add-place-section').classList.add('show');
+    }
+
+    function hideAddPlace() {
+      document.getElementById('add-place-section').classList.remove('show');
+      showHome();
+    }
+
+    async function showMyPlaces() {
+      hideAllSections();
+      document.getElementById('my-places-section').classList.add('show');
+      document.getElementById('dropdown').classList.remove('show');
+      await loadMyPlaces();
+    }
+
+    function openAdminPanel() {
+      hideAllSections();
+      document.getElementById('admin-panel').classList.add('show');
+      document.getElementById('dropdown').classList.remove('show');
+      loadAdminStats();
+      loadAdminUsers();
+      loadAdminPlaces();
+    }
+
+    function hideAllSections() {
+      document.getElementById('home-section').style.display = 'none';
+      document.getElementById('search-section').classList.remove('show');
+      document.getElementById('add-place-section').classList.remove('show');
+      document.getElementById('results-section').classList.remove('show');
+      document.getElementById('my-places-section').classList.remove('show');
+      document.getElementById('admin-panel').classList.remove('show');
+    }
+
+    function showHome() {
+      hideAllSections();
+      document.getElementById('home-section').style.display = 'block';
+    }
+
+    function backToHome() {
+      showHome();
+    }
+
+    // ============ AJOUT DE LIEU ============
+
+    function handlePlacePhoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert('La photo ne doit pas dépasser 2MB');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        placePhotoBase64 = e.target.result;
+        const preview = document.getElementById('place-photo-preview');
+        const upload = document.getElementById('place-photo-upload');
+        const text = document.getElementById('place-photo-text');
+        
+        preview.src = placePhotoBase64;
+        preview.classList.add('show');
+        upload.classList.add('has-image');
+        text.innerHTML = '✅ Photo sélectionnée<br><small>Cliquez pour changer</small>';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function submitPlace() {
+      const nom = document.getElementById('place-nom').value.trim();
+      const categorie = document.getElementById('place-categorie').value;
+      const ville = document.getElementById('place-ville').value;
+      const quartier = document.getElementById('place-quartier').value.trim();
+      const adresseDetail = document.getElementById('place-adresse').value.trim();
+      const telephone = document.getElementById('place-telephone').value.trim();
+      const description = document.getElementById('place-description').value.trim();
+
+      if (!nom || !categorie || !ville || !telephone || !adresseDetail || !placePhotoBase64) {
+        alert('Veuillez remplir tous les champs obligatoires (*) et ajouter une photo');
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-place');
+      btn.disabled = true;
+      btn.textContent = 'Enregistrement...';
+
       try {
-        const response = await fetch('/admin/dashboard', {
-          headers: { 'X-User-Id': currentUser.id }
+        const response = await fetch('/places', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-User-Id': currentUser.id
+          },
+          body: JSON.stringify({
+            nom,
+            categorie,
+            description,
+            ville,
+            quartier,
+            adresseDetail,
+            telephone,
+            whatsapp: document.getElementById('place-whatsapp').value.trim(),
+            email: document.getElementById('place-email').value.trim(),
+            website: document.getElementById('place-website').value.trim(),
+            facebook: document.getElementById('place-facebook').value.trim(),
+            instagram: document.getElementById('place-instagram').value.trim(),
+            horaires: document.getElementById('place-horaires').value.trim(),
+            paiementMobile: document.getElementById('place-paiement').value.split(',').map(s => s.trim()).filter(s => s),
+            livraison: document.getElementById('place-livraison').checked,
+            photo: placePhotoBase64
+          })
         });
-        
-        if (!response.ok) return;
-        
+
         const data = await response.json();
-        if (!data.success) return;
-        
-        const stats = data.stats;
-        
-        // Afficher stats dans le panneau admin
-        document.getElementById('admin-stats').innerHTML = `
-          <div class="stat-card-admin gold">
-            <div class="stat-icon">👑</div>
-            <div class="stat-value-admin">${stats.totalUsers}</div>
-            <div class="stat-label-admin">Total utilisateurs inscrits</div>
-          </div>
-          <div class="stat-card-admin">
-            <div class="stat-icon">🆕</div>
-            <div class="stat-value-admin">${stats.recentUsers.length}</div>
-            <div class="stat-label-admin">Nouveaux ce mois</div>
-          </div>
-          <div class="stat-card-admin">
-            <div class="stat-icon">👨‍💼</div>
-            <div class="stat-value-admin">${stats.totalAdmins}</div>
-            <div class="stat-label-admin">Administrateurs</div>
-          </div>
-        `;
-        
+
+        if (data.success) {
+          alert('✅ ' + data.message);
+          // Reset form
+          document.getElementById('place-nom').value = '';
+          document.getElementById('place-categorie').value = '';
+          document.getElementById('place-ville').value = '';
+          document.getElementById('place-quartier').value = '';
+          document.getElementById('place-description').value = '';
+          document.getElementById('place-adresse').value = '';
+          document.getElementById('place-telephone').value = '';
+          document.getElementById('place-whatsapp').value = '';
+          document.getElementById('place-email').value = '';
+          document.getElementById('place-website').value = '';
+          document.getElementById('place-facebook').value = '';
+          document.getElementById('place-instagram').value = '';
+          document.getElementById('place-horaires').value = '';
+          document.getElementById('place-paiement').value = '';
+          document.getElementById('place-livraison').checked = false;
+          
+          const preview = document.getElementById('place-photo-preview');
+          const upload = document.getElementById('place-photo-upload');
+          const text = document.getElementById('place-photo-text');
+          preview.src = '';
+          preview.classList.remove('show');
+          upload.classList.remove('has-image');
+          text.innerHTML = '📷 Cliquez pour ajouter une photo de votre commerce<br><small>(obligatoire - max 2MB)</small>';
+          placePhotoBase64 = null;
+          
+          hideAddPlace();
+        } else {
+          alert(data.error || 'Erreur lors de l\'enregistrement');
+        }
       } catch (error) {
-        console.error('Erreur chargement stats admin:', error);
+        alert('Erreur de connexion');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '✅ Enregistrer mon commerce';
       }
     }
 
-    async function openAdminPanel() {
-      document.getElementById('search-section').style.display = 'none';
-      document.getElementById('results-section').style.display = 'none';
-      document.getElementById('admin-panel').classList.add('show');
-      document.getElementById('dropdown').classList.remove('show');
-      
-      // Charger la liste des utilisateurs
-      await loadUsersList();
-    }
+    // ============ MES COMMERCES ============
 
-    async function loadUsersList() {
+    async function loadMyPlaces() {
       try {
-        const response = await fetch('/admin/users', {
+        const response = await fetch('/my-places', {
           headers: { 'X-User-Id': currentUser.id }
         });
-        
+
         if (!response.ok) {
-          alert('Erreur lors du chargement des utilisateurs');
-          return;
-        }
-        
-        const data = await response.json();
-        if (!data.success) return;
-        
-        const usersList = document.getElementById('users-list');
-        
-        if (data.users.length === 0) {
-          usersList.innerHTML = '<p style="text-align: center; color: #666;">Aucun utilisateur inscrit</p>';
-          return;
-        }
-        
-        usersList.innerHTML = data.users.map(user => `
-          <div class="user-card">
-            <img src="${user.photo || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 24 24\'%3E%3Ccircle cx=\'12\' cy=\'12\' r=\'12\' fill=\'%23ddd\'/%3E%3Ctext x=\'12\' y=\'16\' text-anchor=\'middle\' font-size=\'12\' fill=\'%23999\'%3E👤%3C/text%3E%3C/svg%3E'}" 
-                 alt="${user.prenom}" class="user-card-photo">
-            <div class="user-card-info">
-              <div class="user-card-name">${user.prenom} ${user.nom}</div>
-              <div class="user-card-email">📧 ${user.email}</div>
-              <div class="user-card-date">📅 Inscrit le ${new Date(user.createdAt).toLocaleDateString('fr-FR')}</div>
+          document.getElementById('my-places-grid').innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <div class="empty-state-icon">😕</div>
+              <h3>Erreur de chargement</h3>
             </div>
-            ${user.isAdmin ? '<span class="user-card-admin-badge">👑 ADMIN</span>' : ''}
-            ${user.id !== currentUser.id ? `
-              <button class="delete-btn" onclick="deleteUser('${user.id}', '${user.prenom} ${user.nom}')">
-                🗑️ Supprimer
-              </button>
-            ` : '<span style="color: #666; font-style: italic;">Vous</span>'}
-          </div>
-        `).join('');
-        
+          `;
+          return;
+        }
+
+        const data = await response.json();
+        const grid = document.getElementById('my-places-grid');
+
+        if (!data.places || data.places.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <div class="empty-state-icon">🏪</div>
+              <h3>Vous n'avez pas encore de commerce</h3>
+              <p>Cliquez sur "Ajouter mon commerce" pour commencer !</p>
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = data.places.map(place => renderPlaceCard(place, true)).join('');
+
       } catch (error) {
         console.error('Erreur:', error);
       }
     }
 
-    async function deleteUser(userId, userName) {
-      if (!confirm(`Êtes-vous sûr de vouloir supprimer ${userName} ?\nCette action est irréversible !`)) {
-        return;
-      }
-      
-      try {
-        const response = await fetch(`/admin/users/${userId}`, {
-          method: 'DELETE',
-          headers: { 'X-User-Id': currentUser.id }
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          alert(`${userName} a été supprimé avec succès`);
-          await loadUsersList(); // Rafraîchir la liste
-          await loadAdminStats(); // Rafraîchir les stats
-        } else {
-          alert(data.error || 'Erreur lors de la suppression');
-        }
-      } catch (error) {
-        alert('Erreur de connexion');
-      }
-    }
-
-    function closeAdminPanel() {
-      document.getElementById('admin-panel').classList.remove('show');
-      document.getElementById('search-section').style.display = 'block';
-    }
-
-    // ============ SEARCH FUNCTIONS (inchangées) ============
+    // ============ RECHERCHE ============
 
     async function search() {
       const type = document.getElementById('search-type').value.replace(/[^\w\s]/g, '').trim();
@@ -1309,9 +1689,8 @@
     }
 
     function displayResults(data) {
-      document.getElementById('search-section').style.display = 'none';
-      document.getElementById('admin-panel').classList.remove('show');
-      document.getElementById('results-section').style.display = 'block';
+      hideAllSections();
+      document.getElementById('results-section').classList.add('show');
       
       const statusDiv = document.getElementById('api-status');
       if (data.demo) {
@@ -1319,15 +1698,15 @@
         statusDiv.textContent = '⚠️ Mode démonstration - Données simulées';
       } else {
         statusDiv.className = 'api-status live';
-        statusDiv.textContent = '✅ Données en temps réel via Google Maps';
+        statusDiv.textContent = `✅ ${data.localCount} commerces locaux + ${data.apiCount || 0} résultats Google Maps`;
       }
 
       const grid = document.getElementById('results-grid');
       
       if (!data.results || data.results.length === 0) {
         grid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: white;">
-            <div style="font-size: 4rem; margin-bottom: 20px;">🔍</div>
+          <div class="empty-state" style="grid-column: 1/-1;">
+            <div class="empty-state-icon">🔍</div>
             <h3>Aucun résultat trouvé</h3>
             <p>Même Sossou Kouamé n'a rien trouvé... Essayez autre chose ! 😅</p>
           </div>
@@ -1336,72 +1715,7 @@
         return;
       }
 
-      grid.innerHTML = data.results.map((place, index) => `
-        <div class="place-card" style="animation-delay: ${index * 0.1}s">
-          ${place.thumbnail ? 
-            `<img src="${place.thumbnail}" class="place-image" alt="${place.name}" onerror="this.style.display='none'">` :
-            `<div class="place-image" style="display: flex; align-items: center; justify-content: center; font-size: 4rem;">🏢</div>`
-          }
-          
-          <div class="place-content">
-            <div class="place-header">
-              <div class="place-name">${place.name}</div>
-              ${place.rating !== 'N/A' ? `
-                <div class="place-rating">
-                  ⭐ ${place.rating}
-                </div>
-              ` : ''}
-            </div>
-            
-            <div class="place-address">
-              📍 ${place.address}
-            </div>
-            
-            <div class="place-info">
-              <div class="info-item">
-                <div class="info-icon">📞</div>
-                <span>${place.phone}</span>
-              </div>
-              <div class="info-item">
-                <div class="info-icon">📏</div>
-                <span>${place.distance}</span>
-              </div>
-              <div class="info-item">
-                <div class="info-icon">🕐</div>
-                <span>${place.hours}</span>
-              </div>
-              <div class="info-item">
-                <div class="info-icon">📝</div>
-                <span>${place.description}</span>
-              </div>
-              ${place.gps ? `
-                <div class="info-item">
-                  <div class="info-icon">🗺️</div>
-                  <span style="font-family: monospace; font-size: 0.85rem;">
-                    ${place.gps.latitude.toFixed(4)}, ${place.gps.longitude.toFixed(4)}
-                  </span>
-                </div>
-              ` : ''}
-            </div>
-            
-            <div class="place-actions">
-              ${place.website ? `
-                <a href="${place.website}" target="_blank" rel="noopener" class="action-btn primary">
-                  🌐 Visiter le site
-                </a>
-              ` : `
-                <button class="action-btn primary" onclick="alert('Site web non disponible')">
-                  🌐 Pas de site
-                </button>
-              `}
-              <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}" 
-                 target="_blank" rel="noopener" class="action-btn secondary">
-                🗺️ Voir sur Maps
-              </a>
-            </div>
-          </div>
-        </div>
-      `).join('');
+      grid.innerHTML = data.results.map((place, index) => renderPlaceCard(place, false, index)).join('');
 
       const ratings = data.results.filter(r => r.rating && r.rating !== 'N/A').map(r => parseFloat(r.rating));
       const avgRating = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : 'N/A';
@@ -1411,9 +1725,109 @@
         return parseFloat(current.rating) > parseFloat(best.rating) ? current : best;
       }, data.results[0]);
 
-      updateStats(data.results.length, avgRating, bestPlace.name.substring(0, 20));
+      updateStats(data.results.length, avgRating, bestPlace.nom.substring(0, 20));
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderPlaceCard(place, isOwner = false, index = 0) {
+      const isLocal = !place.source || place.source !== 'google_maps';
+      const verifiedBadge = place.verified ? `<div class="verified-badge">✅ Vérifié par l'admin</div>` : '';
+      
+      return `
+        <div class="place-card" style="animation-delay: ${index * 0.1}s">
+          ${place.photo ? 
+            `<img src="${place.photo}" class="place-image" alt="${place.nom}" onerror="this.style.display='none'">` :
+            `<div class="place-image" style="display: flex; align-items: center; justify-content: center; font-size: 4rem;">🏪</div>`
+          }
+          
+          <div class="place-content">
+            ${verifiedBadge}
+            <div class="place-header">
+              <div class="place-name">${place.nom}</div>
+              <span class="place-category">${place.categorie.split(' ')[0]}</span>
+            </div>
+            
+            <div class="place-address">
+              📍 ${place.adresseDetail || place.address || `${place.quartier}, ${place.ville}`}
+            </div>
+            
+            <div class="place-info">
+              <div class="info-item">
+                <div class="info-icon">📞</div>
+                <span>${place.telephone}</span>
+              </div>
+              ${place.whatsapp ? `
+                <div class="info-item">
+                  <div class="info-icon">💬</div>
+                  <span>WhatsApp: ${place.whatsapp}</span>
+                </div>
+              ` : ''}
+              ${place.horaires ? `
+                <div class="info-item">
+                  <div class="info-icon">🕐</div>
+                  <span>${place.horaires}</span>
+                </div>
+              ` : ''}
+              ${place.livraison ? `
+                <div class="info-item">
+                  <div class="info-icon">🚚</div>
+                  <span>Livraison disponible</span>
+                </div>
+              ` : ''}
+              ${place.paiementMobile && place.paiementMobile.length > 0 ? `
+                <div class="info-item">
+                  <div class="info-icon">💳</div>
+                  <span>${Array.isArray(place.paiementMobile) ? place.paiementMobile.join(', ') : place.paiementMobile}</span>
+                </div>
+              ` : ''}
+              ${place.description ? `
+                <div class="info-item">
+                  <div class="info-icon">📝</div>
+                  <span>${place.description.substring(0, 100)}${place.description.length > 100 ? '...' : ''}</span>
+                </div>
+              ` : ''}
+              ${isLocal ? `
+                <div class="info-item">
+                  <div class="info-icon">👤</div>
+                  <span>Ajouté par: ${place.proprietaire ? place.proprietaire.prenom + ' ' + place.proprietaire.nom : 'Inconnu'}</span>
+                </div>
+              ` : ''}
+            </div>
+            
+            <div class="place-actions">
+              ${place.whatsapp ? `
+                <a href="https://wa.me/${place.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="action-btn success">
+                  💬 WhatsApp
+                </a>
+              ` : ''}
+              ${place.facebook ? `
+                <a href="https://${place.facebook}" target="_blank" class="action-btn primary">
+                  📘 Facebook
+                </a>
+              ` : ''}
+              ${place.instagram ? `
+                <a href="https://instagram.com/${place.instagram.replace('@', '')}" target="_blank" class="action-btn primary">
+                  📸 Instagram
+                </a>
+              ` : ''}
+              <a href="tel:${place.telephone}" class="action-btn secondary">
+                📞 Appeler
+              </a>
+              ${isOwner ? `
+                <button class="action-btn danger" onclick="deletePlace('${place.id}', '${place.nom}')">
+                  🗑️ Supprimer
+                </button>
+              ` : ''}
+              ${currentUser.isAdmin && !place.verified ? `
+                <button class="action-btn success" onclick="verifyPlace('${place.id}')">
+                  ✅ Vérifier
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     function updateStats(total, avg, best) {
@@ -1422,12 +1836,170 @@
       document.getElementById('stat-best').textContent = best + (best.length >= 20 ? '...' : '');
     }
 
-    function backToSearch() {
-      document.getElementById('search-section').style.display = 'block';
-      document.getElementById('results-section').style.display = 'none';
-      document.getElementById('admin-panel').classList.remove('show');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    async function deletePlace(placeId, placeName) {
+      if (!confirm(`Êtes-vous sûr de vouloir supprimer "${placeName}" ?`)) return;
+      
+      try {
+        const response = await fetch(`/places/${placeId}`, {
+          method: 'DELETE',
+          headers: { 'X-User-Id': currentUser.id }
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          alert('Commerce supprimé avec succès');
+          loadMyPlaces();
+        } else {
+          alert(data.error);
+        }
+      } catch (error) {
+        alert('Erreur de connexion');
+      }
     }
+
+    async function verifyPlace(placeId) {
+      try {
+        const response = await fetch(`/admin/places/${placeId}/verify`, {
+          method: 'PUT',
+          headers: { 'X-User-Id': currentUser.id }
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          alert('Commerce vérifié avec succès');
+          loadAdminPlaces();
+        } else {
+          alert(data.error);
+        }
+      } catch (error) {
+        alert('Erreur de connexion');
+      }
+    }
+
+    // ============ ADMIN FUNCTIONS ============
+
+    async function loadAdminStats() {
+      try {
+        const response = await fetch('/admin/dashboard', {
+          headers: { 'X-User-Id': currentUser.id }
+        });
+        
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        if (!data.success) return;
+        
+        const stats = data.stats;
+        
+        document.getElementById('admin-stats').innerHTML = `
+          <div class="stat-card-admin gold">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value-admin">${stats.totalUsers}</div>
+            <div class="stat-label-admin">Total utilisateurs</div>
+          </div>
+          <div class="stat-card-admin">
+            <div class="stat-icon">🏪</div>
+            <div class="stat-value-admin">${stats.totalPlaces}</div>
+            <div class="stat-label-admin">Total commerces</div>
+          </div>
+          <div class="stat-card-admin">
+            <div class="stat-icon">👑</div>
+            <div class="stat-value-admin">${stats.totalAdmins}</div>
+            <div class="stat-label-admin">Administrateurs</div>
+          </div>
+          <div class="stat-card-admin">
+            <div class="stat-icon">🆕</div>
+            <div class="stat-value-admin">${stats.recentUsers.length}</div>
+            <div class="stat-label-admin">Nouveaux utilisateurs</div>
+          </div>
+        `;
+        
+      } catch (error) {
+        console.error('Erreur chargement stats admin:', error);
+      }
+    }
+
+    async function loadAdminUsers() {
+      try {
+        const response = await fetch('/admin/users', {
+          headers: { 'X-User-Id': currentUser.id }
+        });
+        
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        const list = document.getElementById('admin-users-list');
+        
+        if (data.users.length === 0) {
+          list.innerHTML = '<p style="text-align: center; color: #666;">Aucun utilisateur</p>';
+          return;
+        }
+        
+        list.innerHTML = data.users.map(user => `
+          <div class="user-card">
+            <img src="${user.photo || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 24 24\'%3E%3Ccircle cx=\'12\' cy=\'12\' r=\'12\' fill=\'%23ddd\'/%3E%3Ctext x=\'12\' y=\'16\' text-anchor=\'middle\' font-size=\'12\' fill=\'%23999\'%3E👤%3C/text%3E%3C/svg%3E'}" 
+                 alt="${user.prenom}" class="user-card-photo">
+            <div class="user-card-info">
+              <div class="user-card-name">${user.prenom} ${user.nom}</div>
+              <div class="user-card-email">📧 ${user.email}</div>
+              <div class="user-card-date">📅 Inscrit le ${new Date(user.createdAt).toLocaleDateString('fr-FR')}</div>
+            </div>
+            ${user.isAdmin ? '<span class="user-card-admin-badge">👑 ADMIN</span>' : ''}
+            ${user.id !== currentUser.id ? `
+              <button class="delete-btn" onclick="deleteUser('${user.id}', '${user.prenom} ${user.nom}')">
+                🗑️ Supprimer
+              </button>
+            ` : '<span style="color: #666; font-style: italic;">Vous</span>'}
+          </div>
+        `).join('');
+        
+      } catch (error) {
+        console.error('Erreur:', error);
+      }
+    }
+
+    async function loadAdminPlaces() {
+      try {
+        const response = await fetch('/places');
+        const data = await response.json();
+        
+        const grid = document.getElementById('admin-places-grid');
+        
+        if (!data.places || data.places.length === 0) {
+          grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Aucun commerce enregistré</p>';
+          return;
+        }
+        
+        grid.innerHTML = data.places.map((place, index) => renderPlaceCard(place, false, index)).join('');
+        
+      } catch (error) {
+        console.error('Erreur:', error);
+      }
+    }
+
+    async function deleteUser(userId, userName) {
+      if (!confirm(`Supprimer ${userName} ? Tous ses commerces seront aussi supprimés.`)) return;
+      
+      try {
+        const response = await fetch(`/admin/users/${userId}`, {
+          method: 'DELETE',
+          headers: { 'X-User-Id': currentUser.id }
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          alert('Utilisateur supprimé');
+          loadAdminUsers();
+          loadAdminStats();
+        } else {
+          alert(data.error);
+        }
+      } catch (error) {
+        alert('Erreur de connexion');
+      }
+    }
+
+    // ============ UTILITAIRES ============
 
     function toggleDropdown() {
       document.getElementById('dropdown').classList.toggle('show');
@@ -1438,11 +2010,6 @@
         document.getElementById('dropdown').classList.remove('show');
       }
     });
-
-    function goHome() {
-      backToSearch();
-      document.getElementById('dropdown').classList.remove('show');
-    }
 
     function myProfile() {
       let message = `Profil de ${currentUser.prenom} ${currentUser.nom}\nEmail: ${currentUser.email}`;
