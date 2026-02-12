@@ -17,6 +17,8 @@
       --secondary: #764ba2;
       --accent: #f093fb;
       --success: #11998e;
+      --warning: #f39c12;
+      --danger: #e74c3c;
     }
 
     body {
@@ -78,10 +80,24 @@
       padding: 8px 15px;
       border-radius: 30px;
       transition: all 0.3s;
+      position: relative;
     }
 
     .user-profile:hover {
       background: rgba(102, 126, 234, 0.1);
+    }
+
+    .admin-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      color: #333;
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-weight: bold;
+      animation: pulse 2s infinite;
     }
 
     .user-info {
@@ -116,9 +132,10 @@
       border-radius: 15px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.2);
       padding: 10px;
-      min-width: 200px;
+      min-width: 220px;
       display: none;
       animation: fadeIn 0.3s ease-out;
+      z-index: 1000;
     }
 
     .dropdown.show {
@@ -141,6 +158,16 @@
       color: var(--primary);
     }
 
+    .dropdown-item.admin-item {
+      background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,170,0,0.1));
+      border: 1px solid rgba(255,215,0,0.3);
+      margin-bottom: 5px;
+    }
+
+    .dropdown-item.admin-item:hover {
+      background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,170,0,0.2));
+    }
+
     .dropdown-divider {
       height: 1px;
       background: #eee;
@@ -154,7 +181,7 @@
       padding: 30px;
     }
 
-    /* Message de bienvenue drôle */
+    /* Welcome Hero */
     .welcome-hero {
       text-align: center;
       margin-bottom: 40px;
@@ -173,7 +200,22 @@
       line-height: 1.4;
     }
 
-    .welcome-hero .funny-text {
+    .admin-welcome {
+      background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,170,0,0.3));
+      border: 2px solid #ffd700;
+      padding: 20px;
+      border-radius: 15px;
+      margin-top: 20px;
+      animation: pulse 2s infinite;
+    }
+
+    .admin-welcome h2 {
+      color: #ffd700;
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .funny-text {
       font-size: 1.1rem;
       opacity: 0.95;
       font-style: italic;
@@ -184,7 +226,7 @@
       display: inline-block;
     }
 
-    .welcome-hero .time-display {
+    .time-display {
       font-size: 3rem;
       font-weight: 700;
       margin: 20px 0;
@@ -192,7 +234,7 @@
       font-family: 'Courier New', monospace;
     }
 
-    /* Carte de recherche */
+    /* Cartes de recherche et résultats (inchangées) */
     .search-card {
       background: rgba(255,255,255,0.95);
       color: #333;
@@ -276,7 +318,196 @@
       cursor: not-allowed;
     }
 
-    /* Loader */
+    /* Admin Panel */
+    .admin-panel {
+      display: none;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .admin-panel.show {
+      display: block;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .admin-title {
+      font-size: 2rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .admin-title::before {
+      content: '👑';
+      font-size: 2.5rem;
+    }
+
+    .back-btn {
+      background: rgba(255,255,255,0.9);
+      color: var(--primary);
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    /* Stats Admin */
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card-admin {
+      background: rgba(255,255,255,0.95);
+      color: #333;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      transition: all 0.3s;
+    }
+
+    .stat-card-admin:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-card-admin.gold {
+      border: 3px solid #ffd700;
+      background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,248,220,0.95));
+    }
+
+    .stat-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .stat-value-admin {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label-admin {
+      color: #666;
+      font-size: 1rem;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    /* Liste des utilisateurs */
+    .users-section {
+      background: rgba(255,255,255,0.95);
+      color: #333;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .users-section h3 {
+      color: var(--primary);
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .users-grid {
+      display: grid;
+      gap: 15px;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+
+    .user-card:hover {
+      border-color: var(--primary);
+      transform: translateX(10px);
+    }
+
+    .user-card-photo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--primary);
+    }
+
+    .user-card-info {
+      flex: 1;
+    }
+
+    .user-card-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .user-card-email {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .user-card-date {
+      color: #999;
+      font-size: 0.8rem;
+    }
+
+    .user-card-admin-badge {
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      color: #333;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .delete-btn {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .delete-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    /* Loader et résultats (inchangés) */
     .loader-container {
       display: none;
       margin-top: 25px;
@@ -306,7 +537,6 @@
       100% { background-position: -200% 0; }
     }
 
-    /* Résultats */
     .results-section {
       display: none;
       animation: fadeInUp 0.6s ease-out;
@@ -324,25 +554,6 @@
     .results-title {
       font-size: 1.8rem;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    }
-
-    .back-btn {
-      background: rgba(255,255,255,0.9);
-      color: var(--primary);
-      border: none;
-      padding: 12px 25px;
-      border-radius: 25px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .back-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
     .api-status {
@@ -567,7 +778,11 @@
         font-size: 2rem;
       }
       
-      .search-card {
+      .admin-title {
+        font-size: 1.5rem;
+      }
+      
+      .search-card, .users-section {
         padding: 25px;
       }
       
@@ -579,8 +794,13 @@
         grid-template-columns: 1fr;
       }
       
-      .stats-bar {
+      .stats-bar, .admin-stats {
         grid-template-columns: 1fr;
+      }
+      
+      .user-card {
+        flex-direction: column;
+        text-align: center;
       }
     }
   </style>
@@ -603,9 +823,13 @@
         <div class="user-status">● En ligne</div>
       </div>
       <img id="user-avatar" class="user-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='45' height='45' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23ddd'/%3E%3Ctext x='12' y='16' text-anchor='middle' font-size='12' fill='%23999'%3E👤%3C/text%3E%3C/svg%3E" alt="Profil">
+      <span class="admin-badge" id="admin-badge" style="display: none;">ADMIN</span>
     </div>
     
     <div class="dropdown" id="dropdown">
+      <div class="dropdown-item admin-item" id="menu-admin" style="display: none;" onclick="openAdminPanel()">
+        👑 Espace Admin
+      </div>
       <div class="dropdown-item" onclick="goHome()">
         🏠 Accueil
       </div>
@@ -627,6 +851,7 @@
       <div class="welcome-hero">
         <div class="time-display" id="time-display">--:--</div>
         <h1 id="greeting-message">Chargement du message...</h1>
+        <div id="admin-special-welcome" style="display: none;"></div>
         <div class="funny-text" id="funny-quote">
           "Même les poules du Bénin savent que ce site est le meilleur ! 🐔"
         </div>
@@ -680,6 +905,27 @@
       </div>
     </div>
 
+    <!-- Section Admin -->
+    <div id="admin-panel" class="admin-panel">
+      <div class="admin-header">
+        <h2 class="admin-title">Tableau de bord Administrateur</h2>
+        <button class="back-btn" onclick="closeAdminPanel()">
+          ← Retour à l'accueil
+        </button>
+      </div>
+
+      <div class="admin-stats" id="admin-stats">
+        <!-- Rempli dynamiquement -->
+      </div>
+
+      <div class="users-section">
+        <h3>👥 Liste complète des utilisateurs inscrits</h3>
+        <div class="users-grid" id="users-list">
+          <!-- Rempli dynamiquement -->
+        </div>
+      </div>
+    </div>
+
     <!-- Section résultats -->
     <div id="results-section" class="results-section">
       <div class="results-header">
@@ -716,7 +962,6 @@
     let allLocations = null;
     let quartiersParVille = {};
 
-    // Citations drôles aléatoires
     const funnyQuotes = [
       "Même les poules du Bénin savent que ce site est le meilleur ! 🐔",
       "Si vous ne trouvez pas votre chemin ici, appelez un taxi... ou Sossou Kouamé ! 🚕",
@@ -728,7 +973,6 @@
       "La magie du Bénin, sans sortir de votre canapé ! 🛋️"
     ];
 
-    // Vérifier authentification
     window.addEventListener('load', () => {
       const userData = localStorage.getItem('user');
       if (!userData) {
@@ -740,29 +984,45 @@
       initApp();
       startClock();
       updateGreeting();
+      
+      // Si admin, charger les stats
+      if (currentUser.isAdmin) {
+        loadAdminStats();
+      }
     });
 
     function initApp() {
-      // Afficher infos utilisateur
       document.getElementById('display-name').textContent = `${currentUser.prenom} ${currentUser.nom}`;
       
       if (currentUser.photo) {
         document.getElementById('user-avatar').src = currentUser.photo;
       }
       
-      // Charger les localisations
+      // Afficher badge admin si applicable
+      if (currentUser.isAdmin) {
+        document.getElementById('admin-badge').style.display = 'block';
+        document.getElementById('menu-admin').style.display = 'flex';
+        
+        // Message spécial admin
+        const adminWelcome = document.getElementById('admin-special-welcome');
+        adminWelcome.innerHTML = `
+          <div class="admin-welcome">
+            <h2>👑 Mode Administrateur activé</h2>
+            <p>Bienvenue Kouamé Appolinaire ! Vous avez accès au tableau de bord complet.</p>
+          </div>
+        `;
+        adminWelcome.style.display = 'block';
+      }
+      
       loadLocations();
       
-      // Citation aléatoire
       const randomQuote = funnyQuotes[Math.floor(Math.random() * funnyQuotes.length)];
       document.getElementById('funny-quote').textContent = `"${randomQuote}"`;
     }
 
-    // Horloge en temps réel (heure du Bénin UTC+1)
     function startClock() {
       function updateClock() {
         const now = new Date();
-        // Bénin = UTC+1
         const beninTime = new Date(now.getTime() + (1 * 60 * 60 * 1000));
         
         const hours = String(beninTime.getUTCHours()).padStart(2, '0');
@@ -778,7 +1038,6 @@
       setInterval(updateClock, 1000);
     }
 
-    // Mettre à jour le message de bienvenue selon l'heure
     function updateGreeting() {
       const now = new Date();
       const beninHour = (now.getUTCHours() + 1) % 24;
@@ -800,11 +1059,15 @@
         emoji = "🌃";
       }
       
-      const message = `${greeting} Sossou Kouamé Appolinaire vous souhaite la bienvenue sur le site de recherche des lieux au Bénin ! ${emoji}`;
+      let message = `${greeting} Sossou Kouamé Appolinaire vous souhaite la bienvenue sur le site de recherche des lieux au Bénin ! ${emoji}`;
+      
+      if (currentUser.isAdmin) {
+        message = `${greeting} Bienvenue Kouamé Appolinaire ! Développeur web de ce site, votre royaume vous attend ! ${emoji} 👑`;
+      }
+      
       document.getElementById('greeting-message').textContent = message;
     }
 
-    // Charger toutes les localisations
     async function loadLocations() {
       try {
         const response = await fetch('/api/benin/all-locations');
@@ -825,7 +1088,6 @@
       }
     }
 
-    // Mettre à jour les quartiers selon la ville
     function updateQuartiers() {
       const ville = document.getElementById('search-ville').value;
       const quartierSelect = document.getElementById('search-quartier');
@@ -850,7 +1112,131 @@
       quartierSelect.disabled = false;
     }
 
-    // Recherche
+    // ============ ADMIN FUNCTIONS ============
+    
+    async function loadAdminStats() {
+      try {
+        const response = await fetch('/admin/dashboard', {
+          headers: { 'X-User-Id': currentUser.id }
+        });
+        
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        if (!data.success) return;
+        
+        const stats = data.stats;
+        
+        // Afficher stats dans le panneau admin
+        document.getElementById('admin-stats').innerHTML = `
+          <div class="stat-card-admin gold">
+            <div class="stat-icon">👑</div>
+            <div class="stat-value-admin">${stats.totalUsers}</div>
+            <div class="stat-label-admin">Total utilisateurs inscrits</div>
+          </div>
+          <div class="stat-card-admin">
+            <div class="stat-icon">🆕</div>
+            <div class="stat-value-admin">${stats.recentUsers.length}</div>
+            <div class="stat-label-admin">Nouveaux ce mois</div>
+          </div>
+          <div class="stat-card-admin">
+            <div class="stat-icon">👨‍💼</div>
+            <div class="stat-value-admin">${stats.totalAdmins}</div>
+            <div class="stat-label-admin">Administrateurs</div>
+          </div>
+        `;
+        
+      } catch (error) {
+        console.error('Erreur chargement stats admin:', error);
+      }
+    }
+
+    async function openAdminPanel() {
+      document.getElementById('search-section').style.display = 'none';
+      document.getElementById('results-section').style.display = 'none';
+      document.getElementById('admin-panel').classList.add('show');
+      document.getElementById('dropdown').classList.remove('show');
+      
+      // Charger la liste des utilisateurs
+      await loadUsersList();
+    }
+
+    async function loadUsersList() {
+      try {
+        const response = await fetch('/admin/users', {
+          headers: { 'X-User-Id': currentUser.id }
+        });
+        
+        if (!response.ok) {
+          alert('Erreur lors du chargement des utilisateurs');
+          return;
+        }
+        
+        const data = await response.json();
+        if (!data.success) return;
+        
+        const usersList = document.getElementById('users-list');
+        
+        if (data.users.length === 0) {
+          usersList.innerHTML = '<p style="text-align: center; color: #666;">Aucun utilisateur inscrit</p>';
+          return;
+        }
+        
+        usersList.innerHTML = data.users.map(user => `
+          <div class="user-card">
+            <img src="${user.photo || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 24 24\'%3E%3Ccircle cx=\'12\' cy=\'12\' r=\'12\' fill=\'%23ddd\'/%3E%3Ctext x=\'12\' y=\'16\' text-anchor=\'middle\' font-size=\'12\' fill=\'%23999\'%3E👤%3C/text%3E%3C/svg%3E'}" 
+                 alt="${user.prenom}" class="user-card-photo">
+            <div class="user-card-info">
+              <div class="user-card-name">${user.prenom} ${user.nom}</div>
+              <div class="user-card-email">📧 ${user.email}</div>
+              <div class="user-card-date">📅 Inscrit le ${new Date(user.createdAt).toLocaleDateString('fr-FR')}</div>
+            </div>
+            ${user.isAdmin ? '<span class="user-card-admin-badge">👑 ADMIN</span>' : ''}
+            ${user.id !== currentUser.id ? `
+              <button class="delete-btn" onclick="deleteUser('${user.id}', '${user.prenom} ${user.nom}')">
+                🗑️ Supprimer
+              </button>
+            ` : '<span style="color: #666; font-style: italic;">Vous</span>'}
+          </div>
+        `).join('');
+        
+      } catch (error) {
+        console.error('Erreur:', error);
+      }
+    }
+
+    async function deleteUser(userId, userName) {
+      if (!confirm(`Êtes-vous sûr de vouloir supprimer ${userName} ?\nCette action est irréversible !`)) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/admin/users/${userId}`, {
+          method: 'DELETE',
+          headers: { 'X-User-Id': currentUser.id }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          alert(`${userName} a été supprimé avec succès`);
+          await loadUsersList(); // Rafraîchir la liste
+          await loadAdminStats(); // Rafraîchir les stats
+        } else {
+          alert(data.error || 'Erreur lors de la suppression');
+        }
+      } catch (error) {
+        alert('Erreur de connexion');
+      }
+    }
+
+    function closeAdminPanel() {
+      document.getElementById('admin-panel').classList.remove('show');
+      document.getElementById('search-section').style.display = 'block';
+    }
+
+    // ============ SEARCH FUNCTIONS (inchangées) ============
+
     async function search() {
       const type = document.getElementById('search-type').value.replace(/[^\w\s]/g, '').trim();
       const ville = document.getElementById('search-ville').value;
@@ -895,7 +1281,6 @@
       }
     }
 
-    // Animation loader
     async function animateLoader() {
       const loader = document.getElementById('loader');
       const progress = document.getElementById('progress');
@@ -923,12 +1308,11 @@
       });
     }
 
-    // Afficher résultats
     function displayResults(data) {
       document.getElementById('search-section').style.display = 'none';
+      document.getElementById('admin-panel').classList.remove('show');
       document.getElementById('results-section').style.display = 'block';
       
-      // Status API
       const statusDiv = document.getElementById('api-status');
       if (data.demo) {
         statusDiv.className = 'api-status demo';
@@ -938,7 +1322,6 @@
         statusDiv.textContent = '✅ Données en temps réel via Google Maps';
       }
 
-      // Grille de résultats
       const grid = document.getElementById('results-grid');
       
       if (!data.results || data.results.length === 0) {
@@ -1020,7 +1403,6 @@
         </div>
       `).join('');
 
-      // Stats
       const ratings = data.results.filter(r => r.rating && r.rating !== 'N/A').map(r => parseFloat(r.rating));
       const avgRating = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : 'N/A';
       const bestPlace = data.results.reduce((best, current) => {
@@ -1043,6 +1425,7 @@
     function backToSearch() {
       document.getElementById('search-section').style.display = 'block';
       document.getElementById('results-section').style.display = 'none';
+      document.getElementById('admin-panel').classList.remove('show');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -1062,7 +1445,11 @@
     }
 
     function myProfile() {
-      alert(`Profil de ${currentUser.prenom} ${currentUser.nom}\nEmail: ${currentUser.email}\n\n"Le meilleur utilisateur du site selon Sossou Kouamé !" ⭐`);
+      let message = `Profil de ${currentUser.prenom} ${currentUser.nom}\nEmail: ${currentUser.email}`;
+      if (currentUser.isAdmin) {
+        message += '\n\n👑 VOUS ÊTES L\'ADMINISTRATEUR SUPRÊME !\nDéveloppeur web de ce site';
+      }
+      alert(message);
       document.getElementById('dropdown').classList.remove('show');
     }
 
