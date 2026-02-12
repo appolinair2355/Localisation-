@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Localisateur Bénin | Application</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+      --accent: #f093fb;
+      --success: #11998e;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      min-height: 100vh;
+      color: white;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Header */
+    .top-bar {
+      background: rgba(255,255,255,0.95);
+      color: #333;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .heure-benin {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      padding: 8px 15px;
+      border-radius: 30px;
+      transition: all 0.3s;
+    }
+
+    .user-profile:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .user-info {
+      text-align: right;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 0.95rem;
+    }
+
+    .user-status {
+      font-size: 0.8rem;
+      color: var(--success);
+    }
+
+    .user-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--primary);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 70px;
+      right: 30px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      padding: 10px;
+      min-width: 200px;
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .dropdown.show {
+      display: block;
+    }
+
+    .dropdown-item {
+      padding: 12px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(102, 126, 234, 0.1);
+      color: var(--primary);
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: #eee;
+      margin: 8px 0;
+    }
+
+    /* Contenu */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+
+    /* Message de bienvenue drôle */
+    .welcome-hero {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeInDown 0.8s ease-out;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 25px;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .welcome-hero h1 {
+      font-size: 2.2rem;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      line-height: 1.4;
+    }
+
+    .welcome-hero .funny-text {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      font-style: italic;
+      margin-top: 15px;
+      padding: 15px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 15px;
+      display: inline-block;
+    }
+
+    .welcome-hero .time-display {
+      font-size: 3rem;
+      font-weight: 700;
+      margin: 20px 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      font-family: 'Courier New', monospace;
+    }
+
+    /* Carte de recherche */
+    .search-card {
+      background: rgba(255,255,255,0.95);
+      color: #333;
+      padding: 40px;
+      border-radius: 25px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+      backdrop-filter: blur(20px);
+      margin-bottom: 30px;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    .search-card h2 {
+      color: var(--primary);
+      margin-bottom: 25px;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+      font-size: 0.9rem;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s;
+      background: #fafafa;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-btn {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .search-btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+    }
+
+    .search-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Loader */
+    .loader-container {
+      display: none;
+      margin-top: 25px;
+      background: #f0f0f0;
+      border-radius: 30px;
+      overflow: hidden;
+      height: 40px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+      background-size: 200% 100%;
+      border-radius: 30px;
+      transition: width 0.3s ease;
+      animation: shimmer 2s infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Résultats */
+    .results-section {
+      display: none;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .results-title {
+      font-size: 1.8rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .back-btn {
+      background: rgba(255,255,255,0.9);
+      color: var(--primary);
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .api-status {
+      display: inline-block;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .api-status.live {
+      background: rgba(17, 153, 142, 0.9);
+    }
+
+    .api-status.demo {
+      background: rgba(240, 147, 251, 0.9);
+      animation: pulse 2s infinite;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 25px;
+    }
+
+    .place-card {
+      background: white;
+      color: #333;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    .place-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+
+    .place-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    }
+
+    .place-content {
+      padding: 25px;
+    }
+
+    .place-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+    }
+
+    .place-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.3;
+    }
+
+    .place-rating {
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .place-address {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .place-info {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    .info-icon {
+      width: 35px;
+      height: 35px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .place-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .action-btn.primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+    }
+
+    .action-btn.secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.9);
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      color: #333;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    @media (max-width: 768px) {
+      .top-bar {
+        padding: 15px 20px;
+      }
+      
+      .heure-benin {
+        display: none;
+      }
+      
+      .user-info {
+        display: none;
+      }
+      
+      .main-content {
+        padding: 20px;
+      }
+      
+      .welcome-hero h1 {
+        font-size: 1.5rem;
+      }
+      
+      .welcome-hero .time-display {
+        font-size: 2rem;
+      }
+      
+      .search-card {
+        padding: 25px;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-bar {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barre de navigation -->
+  <div class="top-bar">
+    <div class="logo">
+      🌍 Localisateur Bénin
+    </div>
+    
+    <div class="heure-benin" id="heure-display">
+      🕐 <span id="heure-valeur">--:--:--</span>
+    </div>
+    
+    <div class="user-profile" onclick="toggleDropdown()">
+      <div class="user-info">
+        <div class="user-name" id="display-name">Chargement...</div>
+        <div class="user-status">● En ligne</div>
+      </div>
+      <img id="user-avatar" class="user-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='45' height='45' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23ddd'/%3E%3Ctext x='12' y='16' text-anchor='middle' font-size='12' fill='%23999'%3E👤%3C/text%3E%3C/svg%3E" alt="Profil">
+    </div>
+    
+    <div class="dropdown" id="dropdown">
+      <div class="dropdown-item" onclick="goHome()">
+        🏠 Accueil
+      </div>
+      <div class="dropdown-item" onclick="myProfile()">
+        👤 Mon profil
+      </div>
+      <div class="dropdown-divider"></div>
+      <div class="dropdown-item" onclick="logout()" style="color: #e74c3c;">
+        🚪 Déconnexion
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div class="main-content">
+    
+    <!-- Section de recherche -->
+    <div id="search-section">
+      <div class="welcome-hero">
+        <div class="time-display" id="time-display">--:--</div>
+        <h1 id="greeting-message">Chargement du message...</h1>
+        <div class="funny-text" id="funny-quote">
+          "Même les poules du Bénin savent que ce site est le meilleur ! 🐔"
+        </div>
+      </div>
+
+      <div class="search-card">
+        <h2>🔍 Que recherchez-vous aujourd'hui ?</h2>
+        
+        <div class="form-grid">
+          <div class="input-group">
+            <label>Type de lieu</label>
+            <select id="search-type">
+              <option value="">-- Choisir --</option>
+              <option>🍽️ Restaurant</option>
+              <option>🏖️ Plage</option>
+              <option>🍺 Buvette</option>
+              <option>🥩 Boucherie</option>
+              <option>🏨 Hôtel</option>
+              <option>☕ Café</option>
+              <option>🏥 Pharmacie</option>
+              <option>⛽ Station-service</option>
+              <option>🏦 Banque</option>
+              <option>🛒 Supermarché</option>
+              <option>🎓 École</option>
+              <option>🏛️ Administration</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Ville / Commune</label>
+            <select id="search-ville" onchange="updateQuartiers()">
+              <option value="">-- Choisir une ville --</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Quartier (optionnel)</label>
+            <select id="search-quartier" disabled>
+              <option value="">-- D'abord choisir une ville --</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="search-btn" onclick="search()" id="btn-search">
+          🔎 Rechercher des lieux
+        </button>
+
+        <div class="loader-container" id="loader">
+          <div class="progress-bar" id="progress">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section résultats -->
+    <div id="results-section" class="results-section">
+      <div class="results-header">
+        <h2 class="results-title">📍 Résultats trouvés</h2>
+        <button class="back-btn" onclick="backToSearch()">
+          ← Nouvelle recherche
+        </button>
+      </div>
+
+      <div id="api-status" class="api-status"></div>
+
+      <div class="results-grid" id="results-grid"></div>
+
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Lieux trouvés</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-avg">0</div>
+          <div class="stat-label">Note moyenne</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-best">-</div>
+          <div class="stat-label">Meilleur lieu</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentUser = null;
+    let allLocations = null;
+    let quartiersParVille = {};
+
+    // Citations drôles aléatoires
+    const funnyQuotes = [
+      "Même les poules du Bénin savent que ce site est le meilleur ! 🐔",
+      "Si vous ne trouvez pas votre chemin ici, appelez un taxi... ou Sossou Kouamé ! 🚕",
+      "Plus rapide qu'un zemidjan, plus précis qu'un GPS ! 🏍️",
+      "Les meilleurs lieux du Bénin, sans la poussière de la route ! 💨",
+      "Sossou Kouamé a cherché pour vous, vous n'avez plus qu'à y aller ! 🎯",
+      "Mieux que demander à Mamie du quartier ! 👵",
+      "Trouvé en 2 secondes, alors qu'il vous aurait fallu 2 heures ! ⏱️",
+      "La magie du Bénin, sans sortir de votre canapé ! 🛋️"
+    ];
+
+    // Vérifier authentification
+    window.addEventListener('load', () => {
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        window.location.href = '/index.html';
+        return;
+      }
+      
+      currentUser = JSON.parse(userData);
+      initApp();
+      startClock();
+      updateGreeting();
+    });
+
+    function initApp() {
+      // Afficher infos utilisateur
+      document.getElementById('display-name').textContent = `${currentUser.prenom} ${currentUser.nom}`;
+      
+      if (currentUser.photo) {
+        document.getElementById('user-avatar').src = currentUser.photo;
+      }
+      
+      // Charger les localisations
+      loadLocations();
+      
+      // Citation aléatoire
+      const randomQuote = funnyQuotes[Math.floor(Math.random() * funnyQuotes.length)];
+      document.getElementById('funny-quote').textContent = `"${randomQuote}"`;
+    }
+
+    // Horloge en temps réel (heure du Bénin UTC+1)
+    function startClock() {
+      function updateClock() {
+        const now = new Date();
+        // Bénin = UTC+1
+        const beninTime = new Date(now.getTime() + (1 * 60 * 60 * 1000));
+        
+        const hours = String(beninTime.getUTCHours()).padStart(2, '0');
+        const minutes = String(beninTime.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(beninTime.getUTCSeconds()).padStart(2, '0');
+        
+        const timeString = `${hours}:${minutes}:${seconds}`;
+        document.getElementById('heure-valeur').textContent = timeString;
+        document.getElementById('time-display').textContent = `${hours}:${minutes}`;
+      }
+      
+      updateClock();
+      setInterval(updateClock, 1000);
+    }
+
+    // Mettre à jour le message de bienvenue selon l'heure
+    function updateGreeting() {
+      const now = new Date();
+      const beninHour = (now.getUTCHours() + 1) % 24;
+      
+      let greeting = '';
+      let emoji = '';
+      
+      if (beninHour >= 5 && beninHour < 12) {
+        greeting = "Bonjour ! ☀️";
+        emoji = "🌅";
+      } else if (beninHour >= 12 && beninHour < 15) {
+        greeting = "Bonjour ! 🌤️";
+        emoji = "☀️";
+      } else if (beninHour >= 15 && beninHour < 20) {
+        greeting = "Bonsoir ! 🌆";
+        emoji = "🌇";
+      } else {
+        greeting = "Bonsoir ! 🌙";
+        emoji = "🌃";
+      }
+      
+      const message = `${greeting} Sossou Kouamé Appolinaire vous souhaite la bienvenue sur le site de recherche des lieux au Bénin ! ${emoji}`;
+      document.getElementById('greeting-message').textContent = message;
+    }
+
+    // Charger toutes les localisations
+    async function loadLocations() {
+      try {
+        const response = await fetch('/api/benin/all-locations');
+        const data = await response.json();
+        
+        allLocations = data.villes;
+        quartiersParVille = data.quartiersParVille;
+        
+        const select = document.getElementById('search-ville');
+        allLocations.forEach(ville => {
+          const option = document.createElement('option');
+          option.value = ville;
+          option.textContent = ville;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Erreur chargement villes:', error);
+      }
+    }
+
+    // Mettre à jour les quartiers selon la ville
+    function updateQuartiers() {
+      const ville = document.getElementById('search-ville').value;
+      const quartierSelect = document.getElementById('search-quartier');
+      
+      if (!ville) {
+        quartierSelect.innerHTML = '<option value="">-- D\'abord choisir une ville --</option>';
+        quartierSelect.disabled = true;
+        return;
+      }
+
+      const quartiers = quartiersParVille[ville] || [];
+      
+      quartierSelect.innerHTML = '<option value="">-- Tous les quartiers --</option>';
+      
+      quartiers.forEach(q => {
+        const option = document.createElement('option');
+        option.value = q;
+        option.textContent = q;
+        quartierSelect.appendChild(option);
+      });
+      
+      quartierSelect.disabled = false;
+    }
+
+    // Recherche
+    async function search() {
+      const type = document.getElementById('search-type').value.replace(/[^\w\s]/g, '').trim();
+      const ville = document.getElementById('search-ville').value;
+      const quartier = document.getElementById('search-quartier').value;
+
+      if (!type || !ville) {
+        alert('Veuillez sélectionner un type de lieu et une ville');
+        return;
+      }
+
+      document.getElementById('btn-search').disabled = true;
+      await animateLoader();
+
+      try {
+        const response = await fetch('/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-User-Id': currentUser.id
+          },
+          body: JSON.stringify({ type, ville, quartier })
+        });
+
+        const data = await response.json();
+        
+        if (!data.success) {
+          if (response.status === 401) {
+            logout();
+            return;
+          }
+          alert(data.error || 'Erreur lors de la recherche');
+          return;
+        }
+
+        displayResults(data);
+        
+      } catch (error) {
+        console.error(error);
+        alert('Erreur de connexion');
+      } finally {
+        document.getElementById('btn-search').disabled = false;
+      }
+    }
+
+    // Animation loader
+    async function animateLoader() {
+      const loader = document.getElementById('loader');
+      const progress = document.getElementById('progress');
+      
+      loader.style.display = 'block';
+      
+      return new Promise(resolve => {
+        let width = 0;
+        const interval = setInterval(() => {
+          width += Math.random() * 5 + 2;
+          if (width > 100) width = 100;
+          
+          progress.style.width = width + '%';
+          progress.textContent = Math.floor(width) + '%';
+          
+          if (width >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              loader.style.display = 'none';
+              progress.style.width = '0%';
+              resolve();
+            }, 200);
+          }
+        }, 20);
+      });
+    }
+
+    // Afficher résultats
+    function displayResults(data) {
+      document.getElementById('search-section').style.display = 'none';
+      document.getElementById('results-section').style.display = 'block';
+      
+      // Status API
+      const statusDiv = document.getElementById('api-status');
+      if (data.demo) {
+        statusDiv.className = 'api-status demo';
+        statusDiv.textContent = '⚠️ Mode démonstration - Données simulées';
+      } else {
+        statusDiv.className = 'api-status live';
+        statusDiv.textContent = '✅ Données en temps réel via Google Maps';
+      }
+
+      // Grille de résultats
+      const grid = document.getElementById('results-grid');
+      
+      if (!data.results || data.results.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: white;">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🔍</div>
+            <h3>Aucun résultat trouvé</h3>
+            <p>Même Sossou Kouamé n'a rien trouvé... Essayez autre chose ! 😅</p>
+          </div>
+        `;
+        updateStats(0, 0, '-');
+        return;
+      }
+
+      grid.innerHTML = data.results.map((place, index) => `
+        <div class="place-card" style="animation-delay: ${index * 0.1}s">
+          ${place.thumbnail ? 
+            `<img src="${place.thumbnail}" class="place-image" alt="${place.name}" onerror="this.style.display='none'">` :
+            `<div class="place-image" style="display: flex; align-items: center; justify-content: center; font-size: 4rem;">🏢</div>`
+          }
+          
+          <div class="place-content">
+            <div class="place-header">
+              <div class="place-name">${place.name}</div>
+              ${place.rating !== 'N/A' ? `
+                <div class="place-rating">
+                  ⭐ ${place.rating}
+                </div>
+              ` : ''}
+            </div>
+            
+            <div class="place-address">
+              📍 ${place.address}
+            </div>
+            
+            <div class="place-info">
+              <div class="info-item">
+                <div class="info-icon">📞</div>
+                <span>${place.phone}</span>
+              </div>
+              <div class="info-item">
+                <div class="info-icon">📏</div>
+                <span>${place.distance}</span>
+              </div>
+              <div class="info-item">
+                <div class="info-icon">🕐</div>
+                <span>${place.hours}</span>
+              </div>
+              <div class="info-item">
+                <div class="info-icon">📝</div>
+                <span>${place.description}</span>
+              </div>
+              ${place.gps ? `
+                <div class="info-item">
+                  <div class="info-icon">🗺️</div>
+                  <span style="font-family: monospace; font-size: 0.85rem;">
+                    ${place.gps.latitude.toFixed(4)}, ${place.gps.longitude.toFixed(4)}
+                  </span>
+                </div>
+              ` : ''}
+            </div>
+            
+            <div class="place-actions">
+              ${place.website ? `
+                <a href="${place.website}" target="_blank" rel="noopener" class="action-btn primary">
+                  🌐 Visiter le site
+                </a>
+              ` : `
+                <button class="action-btn primary" onclick="alert('Site web non disponible')">
+                  🌐 Pas de site
+                </button>
+              `}
+              <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}" 
+                 target="_blank" rel="noopener" class="action-btn secondary">
+                🗺️ Voir sur Maps
+              </a>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Stats
+      const ratings = data.results.filter(r => r.rating && r.rating !== 'N/A').map(r => parseFloat(r.rating));
+      const avgRating = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : 'N/A';
+      const bestPlace = data.results.reduce((best, current) => {
+        if (!best.rating || best.rating === 'N/A') return current;
+        if (!current.rating || current.rating === 'N/A') return best;
+        return parseFloat(current.rating) > parseFloat(best.rating) ? current : best;
+      }, data.results[0]);
+
+      updateStats(data.results.length, avgRating, bestPlace.name.substring(0, 20));
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateStats(total, avg, best) {
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-avg').textContent = avg;
+      document.getElementById('stat-best').textContent = best + (best.length >= 20 ? '...' : '');
+    }
+
+    function backToSearch() {
+      document.getElementById('search-section').style.display = 'block';
+      document.getElementById('results-section').style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleDropdown() {
+      document.getElementById('dropdown').classList.toggle('show');
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.user-profile')) {
+        document.getElementById('dropdown').classList.remove('show');
+      }
+    });
+
+    function goHome() {
+      backToSearch();
+      document.getElementById('dropdown').classList.remove('show');
+    }
+
+    function myProfile() {
+      alert(`Profil de ${currentUser.prenom} ${currentUser.nom}\nEmail: ${currentUser.email}\n\n"Le meilleur utilisateur du site selon Sossou Kouamé !" ⭐`);
+      document.getElementById('dropdown').classList.remove('show');
+    }
+
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = '/index.html';
+    }
+  </script>
+
+</body>
+</html>
