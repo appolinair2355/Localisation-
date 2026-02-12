@@ -181,14 +181,6 @@
     button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      transform: none;
-    }
-
-    .error {
-      color: #e74c3c;
-      font-size: 0.85rem;
-      margin-top: 5px;
-      display: none;
     }
 
     .success-message {
@@ -199,6 +191,18 @@
       margin-bottom: 20px;
       display: none;
       animation: slideIn 0.4s ease-out;
+    }
+
+    .admin-notice {
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      color: #333;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: none;
+      animation: pulse 2s infinite;
+      font-weight: 600;
+      text-align: center;
     }
 
     @keyframes slideUp {
@@ -215,6 +219,11 @@
       from { opacity: 0; transform: translateX(-20px); }
       to { opacity: 1; transform: translateX(0); }
     }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
   </style>
 </head>
 <body>
@@ -222,7 +231,7 @@
   <div class="container">
     <div class="header">
       <h1>🌍 Localisateur Bénin</h1>
-      <p>Découvrez les meilleurs lieux près de chez vous</p>
+      <p>Découvrez et partagez les meilleurs lieux</p>
     </div>
 
     <div class="tabs">
@@ -232,6 +241,9 @@
 
     <div class="form-container">
       <div id="success-msg" class="success-message"></div>
+      <div id="admin-notice" class="admin-notice">
+        👑 Mode Administrateur détecté ! Bienvenue Kouamé Appolinaire !
+      </div>
 
       <!-- Formulaire Connexion -->
       <form id="login-form" class="form active" onsubmit="login(event)">
@@ -264,17 +276,17 @@
 
         <div class="input-group">
           <label>Nom</label>
-          <input type="text" id="reg-nom" placeholder="Votre nom" required>
+          <input type="text" id="reg-nom" placeholder="Votre nom" required oninput="checkAdmin()">
         </div>
 
         <div class="input-group">
           <label>Prénom</label>
-          <input type="text" id="reg-prenom" placeholder="Votre prénom" required>
+          <input type="text" id="reg-prenom" placeholder="Votre prénom" required oninput="checkAdmin()">
         </div>
 
         <div class="input-group">
           <label>Email</label>
-          <input type="email" id="reg-email" placeholder="votre@email.com" required>
+          <input type="email" id="reg-email" placeholder="votre@email.com" required oninput="checkAdmin()">
         </div>
 
         <div class="input-group">
@@ -322,6 +334,23 @@
       reader.readAsDataURL(file);
     }
 
+    function checkAdmin() {
+      const nom = document.getElementById('reg-nom').value.toLowerCase().trim();
+      const prenom = document.getElementById('reg-prenom').value.toLowerCase().trim();
+      const email = document.getElementById('reg-email').value.toLowerCase().trim();
+      
+      const isAdmin = (nom === 'sossou' || nom === 'sossou ') && 
+                      (prenom === 'kouamé' || prenom === 'kouame' || prenom === 'kouamé ' || prenom === 'kouame ') &&
+                      (email === 'sossoukouam@gmail.com' || email === 'sossoukouam@gmail.com ');
+      
+      const notice = document.getElementById('admin-notice');
+      if (isAdmin) {
+        notice.style.display = 'block';
+      } else {
+        notice.style.display = 'none';
+      }
+    }
+
     async function login(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-login');
@@ -344,10 +373,10 @@
           localStorage.setItem('user', JSON.stringify(data.user));
           window.location.href = '/app.html';
         } else {
-          showError(data.error);
+          alert(data.error);
         }
       } catch (error) {
-        showError('Erreur de connexion');
+        alert('Erreur de connexion');
       } finally {
         btn.disabled = false;
         btn.textContent = 'Se connecter';
@@ -383,7 +412,9 @@
 
         if (data.success) {
           const msg = document.getElementById('success-msg');
-          msg.textContent = 'Compte créé avec succès ! Redirection...';
+          msg.textContent = data.isAdmin ? 
+            '👑 Compte Administrateur créé ! Redirection...' : 
+            'Compte créé avec succès ! Redirection...';
           msg.style.display = 'block';
           
           localStorage.setItem('user', JSON.stringify(data.user));
@@ -392,22 +423,17 @@
             window.location.href = '/app.html';
           }, 1500);
         } else {
-          showError(data.error);
+          alert(data.error);
           btn.disabled = false;
           btn.textContent = 'Créer mon compte';
         }
       } catch (error) {
-        showError('Erreur lors de l\'inscription');
+        alert('Erreur lors de l\'inscription');
         btn.disabled = false;
         btn.textContent = 'Créer mon compte';
       }
     }
 
-    function showError(message) {
-      alert(message); // Simplifié, tu peux remplacer par un toast plus joli
-    }
-
-    // Vérifier si déjà connecté
     window.addEventListener('load', () => {
       const user = localStorage.getItem('user');
       if (user) {
